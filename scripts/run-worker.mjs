@@ -22,6 +22,8 @@ const model = args.model ?? process.env.CLOWNFISH_MODEL ?? "gpt-5.5";
 const codexTimeoutMs = Number(process.env.CLOWNFISH_CODEX_TIMEOUT_MS ?? 30 * 60 * 1000);
 const resultRepairAttempts = Math.max(0, Number(process.env.CLOWNFISH_RESULT_REPAIR_ATTEMPTS ?? 1));
 const resultRepairTimeoutMs = Number(process.env.CLOWNFISH_RESULT_REPAIR_TIMEOUT_MS ?? 10 * 60 * 1000);
+const plannerTimeoutMs = parsePositiveIntegerEnv(process.env.CLOWNFISH_PLANNER_TIMEOUT_MS, 10 * 60 * 1000);
+const reviewTimeoutMs = parsePositiveIntegerEnv(process.env.CLOWNFISH_REVIEW_TIMEOUT_MS, 10 * 60 * 1000);
 const codexReasoningEffort = String(process.env.CLOWNFISH_CODEX_REASONING_EFFORT ?? "medium");
 const codexServiceTier = String(process.env.CLOWNFISH_CODEX_SERVICE_TIER ?? "fast").trim();
 const codexStdoutMaxBufferBytes = parsePositiveIntegerEnv(
@@ -78,11 +80,7 @@ if (targetCheckout.path) {
 
 if (!dryRun) {
   const plannerArgs = ["scripts/plan-cluster.mjs", jobPath, "--run-dir", runDir];
-  const planner = spawnSync(process.execPath, plannerArgs, {
-    cwd: repoRoot(),
-    encoding: "utf8",
-    env: process.env,
-  });
+  const planner = runPlanner(plannerArgs);
   if (planner.status !== 0) {
     console.error(planner.stderr || planner.stdout);
     process.exit(planner.status ?? 1);
@@ -91,11 +89,7 @@ if (!dryRun) {
   promptContext.fixArtifactPath = path.join(runDir, "fix-artifact.json");
 } else if (mode === "autonomous") {
   const plannerArgs = ["scripts/plan-cluster.mjs", jobPath, "--run-dir", runDir, "--offline"];
-  const planner = spawnSync(process.execPath, plannerArgs, {
-    cwd: repoRoot(),
-    encoding: "utf8",
-    env: process.env,
-  });
+  const planner = runPlanner(plannerArgs);
   if (planner.status !== 0) {
     console.error(planner.stderr || planner.stdout);
     process.exit(planner.status ?? 1);
@@ -272,13 +266,35 @@ function repairResultIfNeeded() {
   }
 }
 
-function reviewResult() {
-  normalizeResultMetadata();
-  return spawnSync(process.execPath, ["scripts/review-results.mjs", runDir], {
+function runPlanner(plannerArgs) {
+  const planner = spawnSync(process.execPath, plannerArgs, {
     cwd: repoRoot(),
     encoding: "utf8",
     env: process.env,
+    timeout: plannerTimeoutMs,
   });
+  if (planner.error?.code === "ETIMEDOUT") {
+    writeBlockedResult(`Planner timed out after ${plannerTimeoutMs}ms`);
+    console.error(`Planner timed out after ${plannerTimeoutMs}ms`);
+    process.exit(0);
+  }
+  return planner;
+}
+
+function reviewResult() {
+  normalizeResultMetadata();
+  const review = spawnSync(process.execPath, ["scripts/review-results.mjs", runDir], {
+    cwd: repoRoot(),
+    encoding: "utf8",
+    env: process.env,
+    timeout: reviewTimeoutMs,
+  });
+  if (review.error?.code === "ETIMEDOUT") {
+    writeBlockedResult(`review-results timed out after ${reviewTimeoutMs}ms`);
+    console.error(`review-results timed out after ${reviewTimeoutMs}ms`);
+    process.exit(0);
+  }
+  return review;
 }
 
 function normalizeResultMetadata() {

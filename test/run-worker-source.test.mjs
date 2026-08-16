@@ -50,3 +50,27 @@ test("run-worker repair prompt preserves the cluster fix artifact contract", () 
   assert.match(source, /at most one `build_fix_artifact` action/);
   assert.match(source, /never leave `fix_needed` by itself without a complete executable `fix_artifact`/);
 });
+
+test("run-worker times out hung planner and review-results children", () => {
+  const source = fs.readFileSync(path.join(repoRoot, "scripts", "run-worker.mjs"), "utf8");
+
+  assert.match(source, /CLOWNFISH_PLANNER_TIMEOUT_MS/);
+  assert.match(
+    source,
+    /const plannerTimeoutMs = parsePositiveIntegerEnv\(\s*process\.env\.CLOWNFISH_PLANNER_TIMEOUT_MS,\s*10 \* 60 \* 1000,?\s*\);/s,
+  );
+  assert.match(source, /function runPlanner\(/);
+  assert.match(source, /timeout:\s*plannerTimeoutMs/);
+  assert.match(
+    source,
+    /if \((?:planner|child)\.error\?\.code === "ETIMEDOUT"\) \{\s*writeBlockedResult\([^;]*plannerTimeoutMs/s,
+  );
+  assert.match(
+    source,
+    /spawnSync\(process\.execPath, \["scripts\/review-results\.mjs", runDir\], \{[\s\S]*?timeout:\s*(?:plannerTimeoutMs|reviewTimeoutMs)/,
+  );
+  assert.match(
+    source,
+    /if \((?:review|child)\.error\?\.code === "ETIMEDOUT"\) \{\s*writeBlockedResult\(/s,
+  );
+});
