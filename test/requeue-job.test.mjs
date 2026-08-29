@@ -177,3 +177,117 @@ test("cluster worker run names expose repository dispatch ids", () => {
   assert.match(workflow, /run-name: cluster worker .*github\.event\.client_payload\.dispatch_id/);
   assert.match(workflow, /github\.event\.inputs\.dispatch_id/);
 });
+
+function leftoverRequeueDirs(runId) {
+  const prefix = `projectclownfish-requeue-${runId}-`;
+  return fs
+    .readdirSync(os.tmpdir(), { withFileTypes: true })
+    .filter((entry) => entry.isDirectory() && entry.name.startsWith(prefix))
+    .map((entry) => path.join(os.tmpdir(), entry.name));
+}
+
+function removeLeftoverRequeueDirs(runId) {
+  for (const dir of leftoverRequeueDirs(runId)) {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+}
+
+test("requeue-by-run-id wraps artifact download in try/finally cleanup", () => {
+  const source = fs.readFileSync(path.join(repoRoot, "scripts", "requeue-job.mjs"), "utf8");
+  const fn = source.match(/function resolveFromRunId\(runId\) \{[\s\S]*?\n\}/)?.[0] ?? "";
+  assert.match(fn, /const artifactDir = fs\.mkdtempSync/);
+  assert.match(fn, /try \{/);
+  assert.match(fn, /finally \{/);
+  assert.match(fn, /fs\.rmSync\(artifactDir, \{ recursive: true, force: true \}\)/);
+});
+
+test("requeue-by-run-id removes the temp artifact dir after a successful download", () => {
+  const runId = "900001";
+  removeLeftoverRequeueDirs(runId);
+  const fixture = fs.mkdtempSync(path.join(os.tmpdir(), "clownfish-requeue-cleanup-ok-"));
+  const bin = path.join(fixture, "bin");
+  fs.mkdirSync(bin);
+  fs.writeFileSync(
+    path.join(bin, "gh"),
+    `#!/usr/bin/env node
+import fs from "node:fs";
+import path from "node:path";
+const args = process.argv.slice(2);
+if (args[0] === "run" && args[1] === "download") {
+  const dir = args[args.indexOf("--dir") + 1];
+  fs.mkdirSync(path.join(dir, "artifact"), { recursive: true });
+  fs.writeFileSync(
+    path.join(dir, "artifact", "cluster-plan.json"),
+    JSON.stringify({
+      source_job: "jobs/openclaw/outbox/finalized/merge-88551-cli-owned-auth-gate-20260619.md",
+      mode: "autonomous",
+    }),
+  );
+  process.exit(0);
+}
+process.stderr.write("unexpected gh call: " + args.join(" "));
+process.exit(1);
+`,
+    { mode: 0o755 },
+  );
+
+  const result = spawnSync(process.execPath, ["scripts/requeue-job.mjs", "--run-id", runId], {
+    cwd: repoRoot,
+    encoding: "utf8",
+    env: {
+      ...process.env,
+      PATH: `${bin}${path.delimiter}${process.env.PATH}`,
+      CLOWNFISH_REPO: "openclaw/clownfish",
+    },
+  });
+  const leftovers = leftoverRequeueDirs(runId);
+  removeLeftoverRequeueDirs(runId);
+  fs.rmSync(fixture, { recursive: true, force: true });
+
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  const report = JSON.parse(result.stdout);
+  assert.equal(report.source_run_id, runId);
+  assert.equal(
+    report.source_job,
+    "jobs/openclaw/outbox/finalized/merge-88551-cli-owned-auth-gate-20260619.md",
+  );
+  assert.deepEqual(leftovers, []);
+});
+
+test("requeue-by-run-id removes the temp artifact dir when download fails", () => {
+  const runId = "900002";
+  removeLeftoverRequeueDirs(runId);
+  const fixture = fs.mkdtempSync(path.join(os.tmpdir(), "clownfish-requeue-cleanup-err-"));
+  const bin = path.join(fixture, "bin");
+  fs.mkdirSync(bin);
+  fs.writeFileSync(
+    path.join(bin, "gh"),
+    `#!/usr/bin/env node
+const args = process.argv.slice(2);
+if (args[0] === "run" && args[1] === "download") {
+  process.stderr.write("HTTP 404: artifact missing");
+  process.exit(1);
+}
+process.stderr.write("unexpected gh call: " + args.join(" "));
+process.exit(1);
+`,
+    { mode: 0o755 },
+  );
+
+  const result = spawnSync(process.execPath, ["scripts/requeue-job.mjs", "--run-id", runId], {
+    cwd: repoRoot,
+    encoding: "utf8",
+    env: {
+      ...process.env,
+      PATH: `${bin}${path.delimiter}${process.env.PATH}`,
+      CLOWNFISH_REPO: "openclaw/clownfish",
+    },
+  });
+  const leftovers = leftoverRequeueDirs(runId);
+  removeLeftoverRequeueDirs(runId);
+  fs.rmSync(fixture, { recursive: true, force: true });
+
+  assert.notEqual(result.status, 0);
+  assert.match(`${result.stderr}\n${result.stdout}`, /could not resolve run 900002/);
+  assert.deepEqual(leftovers, []);
+});
