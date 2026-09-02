@@ -177,3 +177,100 @@ test("cluster worker run names expose repository dispatch ids", () => {
   assert.match(workflow, /run-name: cluster worker .*github\.event\.client_payload\.dispatch_id/);
   assert.match(workflow, /github\.event\.inputs\.dispatch_id/);
 });
+
+test("requeue bounds hung gh run download when resolving a run id", () => {
+  const source = fs.readFileSync(path.join(repoRoot, "scripts", "requeue-job.mjs"), "utf8");
+  assert.match(source, /CLOWNFISH_REQUEUE_DOWNLOAD_TIMEOUT_MS/);
+  assert.match(source, /DEFAULT_DOWNLOAD_TIMEOUT_MS/);
+  assert.match(
+    source,
+    /spawnSync\(\s*"gh",\s*\["run",\s*"download",\s*runId,\s*"--repo",\s*repo,\s*"--dir",\s*artifactDir\],/s,
+  );
+  assert.match(source, /timeout:\s*downloadTimeoutMs/);
+  assert.match(source, /killSignal:\s*"SIGKILL"/);
+  assert.match(source, /downloaded\.error\?\.code === "ETIMEDOUT"/);
+});
+
+test("requeue times out a hung gh run download instead of hanging", () => {
+  const fixture = fs.mkdtempSync(path.join(os.tmpdir(), "clownfish-requeue-download-timeout-"));
+  const bin = path.join(fixture, "bin");
+  fs.mkdirSync(bin);
+  fs.writeFileSync(
+    path.join(bin, "gh"),
+    `#!/usr/bin/env node
+const args = process.argv.slice(2);
+if (args[0] === "run" && args[1] === "download") {
+  process.on("SIGTERM", () => {});
+  setInterval(() => {}, 1000);
+  return;
+}
+process.stderr.write("unexpected gh call: " + args.join(" "));
+process.exit(1);
+`,
+    { mode: 0o755 },
+  );
+
+  const started = Date.now();
+  const result = spawnSync(process.execPath, ["scripts/requeue-job.mjs", "900001"], {
+    cwd: repoRoot,
+    encoding: "utf8",
+    timeout: 8000,
+    killSignal: "SIGKILL",
+    env: {
+      ...process.env,
+      PATH: `${bin}${path.delimiter}${process.env.PATH}`,
+      CLOWNFISH_REQUEUE_DOWNLOAD_TIMEOUT_MS: "400",
+    },
+  });
+  const elapsedMs = Date.now() - started;
+
+  assert.equal(result.error, undefined, `requeue hung instead of timing out gh run download: ${result.stderr}`);
+  assert.notEqual(result.status, 0);
+  assert.match(`${result.stderr}\n${result.stdout}`, /gh run download timed out after 400ms/);
+  assert.ok(elapsedMs < 4000, `expected a bounded timeout, waited ${elapsedMs}ms`);
+});
+
+test("requeue still resolves a run id after a timely gh run download", () => {
+  const fixture = fs.mkdtempSync(path.join(os.tmpdir(), "clownfish-requeue-download-ok-"));
+  const bin = path.join(fixture, "bin");
+  fs.mkdirSync(bin);
+  fs.writeFileSync(
+    path.join(bin, "gh"),
+    `#!/usr/bin/env node
+import fs from "node:fs";
+import path from "node:path";
+const args = process.argv.slice(2);
+if (args[0] === "run" && args[1] === "download") {
+  const dir = args[args.indexOf("--dir") + 1];
+  fs.mkdirSync(path.join(dir, "artifact"), { recursive: true });
+  fs.writeFileSync(
+    path.join(dir, "artifact", "cluster-plan.json"),
+    JSON.stringify({ source_job: "jobs/openclaw/inbox/cluster-example.md", mode: "plan" }),
+  );
+  process.exit(0);
+}
+process.stderr.write("unexpected gh call: " + args.join(" "));
+process.exit(1);
+`,
+    { mode: 0o755 },
+  );
+
+  const result = spawnSync(process.execPath, ["scripts/requeue-job.mjs", "900002"], {
+    cwd: repoRoot,
+    encoding: "utf8",
+    timeout: 8000,
+    killSignal: "SIGKILL",
+    env: {
+      ...process.env,
+      PATH: `${bin}${path.delimiter}${process.env.PATH}`,
+      CLOWNFISH_REQUEUE_DOWNLOAD_TIMEOUT_MS: "4000",
+    },
+  });
+
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  const report = JSON.parse(result.stdout);
+  assert.equal(report.source_run_id, "900002");
+  assert.equal(report.source_job, "jobs/openclaw/inbox/cluster-example.md");
+  assert.equal(report.mode, "plan");
+  assert.equal(report.status, "dry_run");
+});
