@@ -429,6 +429,38 @@ test("cluster-worker exports a dedicated App token for exact checks", () => {
   );
 });
 
+test("dispatch bounds hung gh secret and variable list", () => {
+  const source = fs.readFileSync(path.join(repoRoot, "scripts", "dispatch-jobs.mjs"), "utf8");
+  assert.match(source, /CLOWNFISH_DISPATCH_SECRET_LIST_TIMEOUT_MS/);
+  assert.match(source, /DEFAULT_SECRET_LIST_TIMEOUT_MS/);
+  assert.match(source, /function listRepoSecrets\(/);
+  assert.match(source, /function listRepoVariables\(/);
+  assert.match(source, /timeout:\s*secretListTimeoutMs/);
+  assert.match(source, /killSignal:\s*"SIGKILL"/);
+  assert.match(source, /error\?\.code === "ETIMEDOUT"/);
+  assert.equal((source.match(/timeout:\s*secretListTimeoutMs/g) ?? []).length, 2);
+});
+
+test("dispatch skips token-secret preflight when gh secret list hangs", (t) => {
+  const result = runHungRepoListDispatch(t, "secret");
+  assert.equal(result.error, undefined, `dispatch hung instead of timing out gh secret list: ${result.stderr}`);
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  assert.match(result.stderr, /could not inspect repo secrets/);
+  assert.match(result.stderr, /skipping token-secret preflight/);
+  assert.match(result.stdout, /dispatched 1\/1/);
+  assert.ok(result.elapsedMs < 4000, `expected a bounded timeout, waited ${result.elapsedMs}ms`);
+});
+
+test("dispatch warns and continues when gh variable list hangs", (t) => {
+  const result = runHungRepoListDispatch(t, "variable");
+  assert.equal(result.error, undefined, `dispatch hung instead of timing out gh variable list: ${result.stderr}`);
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  assert.match(result.stderr, /could not inspect repo variables/);
+  assert.match(result.stderr, /App-token preflight may be incomplete/);
+  assert.match(result.stdout, /dispatched 1\/1/);
+  assert.ok(result.elapsedMs < 4000, `expected a bounded timeout, waited ${result.elapsedMs}ms`);
+});
+
 function makeFixture() {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "clownfish-app-auth-"));
   const inbox = path.join(root, "inbox");
@@ -440,6 +472,80 @@ function makeFixture() {
   fs.mkdirSync(bin, { recursive: true });
   fs.writeFileSync(ledger, `${JSON.stringify({ attempts: [] })}\n`);
   return { root, inbox, runs, bin, ledger };
+}
+
+function runHungRepoListDispatch(t, hangOn) {
+  const fixture = makeFixture();
+  t.after(() => fs.rmSync(fixture.root, { recursive: true, force: true }));
+  const fakeGhx = writeHungRepoListGh(fixture.bin, "ghx", hangOn);
+  const started = Date.now();
+  const result = spawnSync(
+    process.execPath,
+    [
+      "scripts/dispatch-jobs.mjs",
+      "jobs/openclaw/inbox/cluster-example.md",
+      "--repo",
+      "openclaw/clownfish",
+      "--mode",
+      "plan",
+      "--gh-bin",
+      fakeGhx,
+      "--skip-publish-backlog-check",
+      "--max-live-workers",
+      "1",
+      "--no-dispatch-ledger",
+    ],
+    {
+      cwd: repoRoot,
+      encoding: "utf8",
+      timeout: 8000,
+      killSignal: "SIGKILL",
+      env: {
+        ...process.env,
+        CLOWNFISH_DISPATCH_SECRET_LIST_TIMEOUT_MS: "400",
+      },
+    },
+  );
+  return { ...result, elapsedMs: Date.now() - started };
+}
+
+function writeHungRepoListGh(binDir, name, hangOn) {
+  const filePath = path.join(binDir, name);
+  fs.writeFileSync(
+    filePath,
+    `#!/usr/bin/env node
+const args = process.argv.slice(2);
+if (args.includes("--version")) {
+  console.log("gh fake");
+  process.exit(0);
+}
+if (args[0] === "${hangOn}" && args[1] === "list") {
+  process.on("SIGTERM", () => {});
+  setInterval(() => {}, 1000);
+  return;
+}
+if (args[0] === "secret" && args[1] === "list") {
+  console.log(JSON.stringify([{ name: "CLOWNFISH_GH_TOKEN" }]));
+  process.exit(0);
+}
+if (args[0] === "variable" && args[1] === "list") {
+  console.log(JSON.stringify([{ name: "CLOWNFISH_APP_ID" }]));
+  process.exit(0);
+}
+if (args[0] === "workflow" && args[1] === "run") {
+  console.log("accepted");
+  process.exit(0);
+}
+if (args[0] === "api" && args.some((arg) => arg.endsWith("/runs"))) {
+  console.log(JSON.stringify([{ workflow_runs: [] }]));
+  process.exit(0);
+}
+console.error("unexpected fake gh call", args.join(" "));
+process.exit(1);
+`,
+    { mode: 0o755 },
+  );
+  return filePath;
 }
 
 function writeFakeGh(binDir, name) {

@@ -102,6 +102,7 @@ const publishBacklogPollMs = positiveNumberArg(
 );
 const skipPublishBacklogCheck = Boolean(args["skip-publish-backlog-check"]);
 const skipTokenSecretCheck = Boolean(args["skip-token-secret-check"] ?? args.skip_token_secret_check);
+const DEFAULT_SECRET_LIST_TIMEOUT_MS = 2 * 60 * 1000;
 const allowAppTokenAuth = Boolean(
   args["allow-app-token-auth"] ?? args.allow_app_token_auth ?? process.env.CLOWNFISH_ALLOW_APP_TOKEN_AUTH === "1",
 );
@@ -475,13 +476,21 @@ function appTokenAuthConfigured({ secrets, variables, purpose }) {
   return false;
 }
 
+function resolveSecretListTimeoutMs() {
+  const timeoutMs = Number(process.env.CLOWNFISH_DISPATCH_SECRET_LIST_TIMEOUT_MS ?? DEFAULT_SECRET_LIST_TIMEOUT_MS);
+  return Number.isInteger(timeoutMs) && timeoutMs > 0 ? timeoutMs : DEFAULT_SECRET_LIST_TIMEOUT_MS;
+}
+
 function listRepoSecrets(dispatchRepo) {
+  const secretListTimeoutMs = resolveSecretListTimeoutMs();
   const result = spawnSync(ghCommand, ["secret", "list", "--repo", dispatchRepo, "--json", "name"], {
     cwd: repoRoot(),
     encoding: "utf8",
     stdio: "pipe",
+    timeout: secretListTimeoutMs,
+    killSignal: "SIGKILL",
   });
-  if (result.status !== 0) {
+  if (result.error?.code === "ETIMEDOUT" || result.status !== 0) {
     console.warn(
       `warning: could not inspect repo secrets for ${dispatchRepo}; skipping token-secret preflight\n${result.stderr || result.stdout}`,
     );
@@ -496,12 +505,15 @@ function listRepoSecrets(dispatchRepo) {
 }
 
 function listRepoVariables(dispatchRepo) {
+  const secretListTimeoutMs = resolveSecretListTimeoutMs();
   const result = spawnSync(ghCommand, ["variable", "list", "--repo", dispatchRepo, "--json", "name"], {
     cwd: repoRoot(),
     encoding: "utf8",
     stdio: "pipe",
+    timeout: secretListTimeoutMs,
+    killSignal: "SIGKILL",
   });
-  if (result.status !== 0) {
+  if (result.error?.code === "ETIMEDOUT" || result.status !== 0) {
     console.warn(
       `warning: could not inspect repo variables for ${dispatchRepo}; App-token preflight may be incomplete\n${result.stderr || result.stdout}`,
     );
