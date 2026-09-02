@@ -100,6 +100,20 @@ const publishBacklogPollMs = positiveNumberArg(
   args["publish-backlog-poll-ms"] ?? process.env.CLOWNFISH_PUBLISH_BACKLOG_POLL_MS ?? 30_000,
   "publish-backlog-poll-ms",
 );
+const publishBacklogChildTimeoutMs = positiveNumberArg(
+  args["publish-backlog-child-timeout-ms"] ??
+    args.publish_backlog_child_timeout_ms ??
+    process.env.CLOWNFISH_PUBLISH_BACKLOG_CHILD_TIMEOUT_MS ??
+    120_000,
+  "publish-backlog-child-timeout-ms",
+);
+const dispatchChildTimeoutMs = positiveNumberArg(
+  args["dispatch-child-timeout-ms"] ??
+    args.dispatch_child_timeout_ms ??
+    process.env.CLOWNFISH_DISPATCH_CHILD_TIMEOUT_MS ??
+    120_000,
+  "dispatch-child-timeout-ms",
+);
 const skipPublishBacklogCheck = Boolean(args["skip-publish-backlog-check"]);
 const skipTokenSecretCheck = Boolean(args["skip-token-secret-check"] ?? args.skip_token_secret_check);
 const allowAppTokenAuth = Boolean(
@@ -132,7 +146,7 @@ const headSha = currentHeadSha();
 
 if (files.length === 0) {
   console.error(
-    "usage: node scripts/dispatch-jobs.mjs <job.md> [...] [--jobs-file path] [--mode plan|execute|autonomous] [--runner label] [--execution-runner label] [--model model] [--gh-bin ghx] [--max-live-workers 32] [--wait-for-capacity] [--batch-size N] [--batch-delay-ms N] [--dispatch-limit N] [--dispatch-concurrency N] [--dispatch-event workflow|repository-worker|repository-batch] [--batch-max-parallel N] [--publish-backlog-threshold 25] [--publish-backlog-wait-ms 600000] [--publish-backlog-poll-ms 30000] [--hydrate-comments 0|1] [--max-linked-refs N] [--dry-run 0|1] [--allow-app-token-auth] [--skip-token-secret-check]",
+    "usage: node scripts/dispatch-jobs.mjs <job.md> [...] [--jobs-file path] [--mode plan|execute|autonomous] [--runner label] [--execution-runner label] [--model model] [--gh-bin ghx] [--max-live-workers 32] [--wait-for-capacity] [--batch-size N] [--batch-delay-ms N] [--dispatch-limit N] [--dispatch-concurrency N] [--dispatch-event workflow|repository-worker|repository-batch] [--batch-max-parallel N] [--publish-backlog-threshold 25] [--publish-backlog-wait-ms 600000] [--publish-backlog-poll-ms 30000] [--publish-backlog-child-timeout-ms 120000] [--dispatch-child-timeout-ms 120000] [--hydrate-comments 0|1] [--max-linked-refs N] [--dry-run 0|1] [--allow-app-token-auth] [--skip-token-secret-check]",
   );
   process.exit(2);
 }
@@ -273,7 +287,7 @@ function assertPublishBacklog() {
     `publish backlog ${initial?.missing_count ?? "unknown"} exceeds threshold ${publishBacklogThreshold}; waiting up to ${publishBacklogWaitMs}ms for publisher reconciliation`,
   );
   while (Date.now() < deadline) {
-    sleepMs(Math.min(publishBacklogPollMs, deadline - Date.now()));
+    sleepMs(Math.min(publishBacklogPollMs, Math.max(0, deadline - Date.now())));
     result = readPublishBacklog();
     if (result.status === 0) {
       writePublishBacklogOutput(result);
@@ -285,8 +299,8 @@ function assertPublishBacklog() {
   failed = true;
 }
 
-function readPublishBacklog() {
-  return spawnSync(
+function readPublishBacklog(timeoutMs = publishBacklogChildTimeoutMs) {
+  const result = spawnSync(
     process.execPath,
     [
       path.join(repoRoot(), "scripts", "publish-backlog.mjs"),
@@ -304,8 +318,30 @@ function readPublishBacklog() {
       ghCommand,
       "--json",
     ],
-    { cwd: repoRoot(), encoding: "utf8", stdio: "pipe" },
+    {
+      cwd: repoRoot(),
+      encoding: "utf8",
+      stdio: "pipe",
+      timeout: timeoutMs,
+      killSignal: "SIGKILL",
+      detached: process.platform !== "win32",
+    },
   );
+  if (process.platform !== "win32" && result.pid && (result.error?.code === "ETIMEDOUT" || result.killed)) {
+    try {
+      process.kill(-result.pid, "SIGKILL");
+    } catch (error) {
+      if (error.code !== "ESRCH") throw error;
+    }
+  }
+  if (result.error?.code === "ETIMEDOUT") {
+    return {
+      ...result,
+      status: result.status ?? 1,
+      stderr: `${result.stderr ?? ""}publish-backlog timed out after ${timeoutMs}ms\n`,
+    };
+  }
+  return result;
 }
 
 function publishBacklogSummary(result) {
@@ -723,6 +759,18 @@ function runCommand(command, commandArgs, relative, position, stdin = null, batc
     const child = spawn(command, commandArgs, { cwd: repoRoot(), stdio: ["pipe", "pipe", "pipe"] });
     let stdout = "";
     let stderr = "";
+    let settled = false;
+    let timedOut = false;
+    const timer = setTimeout(() => {
+      timedOut = true;
+      child.kill("SIGKILL");
+    }, dispatchChildTimeoutMs);
+    const finish = (payload) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      resolve(payload);
+    };
     child.stdout.on("data", (chunk) => {
       stdout += chunk;
     });
@@ -730,10 +778,24 @@ function runCommand(command, commandArgs, relative, position, stdin = null, batc
       stderr += chunk;
     });
     child.on("error", (error) => {
-      resolve({ relative, position, status: 1, stdout, stderr: `${stderr}${error.message}`, batch_dispatch_id: batchDispatchId });
+      finish({
+        relative,
+        position,
+        status: 1,
+        stdout,
+        stderr: `${stderr}${error.message}`,
+        batch_dispatch_id: batchDispatchId,
+      });
     });
     child.on("close", (status) => {
-      resolve({ relative, position, status: status ?? 1, stdout, stderr, batch_dispatch_id: batchDispatchId });
+      finish({
+        relative,
+        position,
+        status: timedOut ? 1 : (status ?? 1),
+        stdout,
+        stderr: timedOut ? `${stderr}timed out after ${dispatchChildTimeoutMs}ms` : stderr,
+        batch_dispatch_id: batchDispatchId,
+      });
     });
     if (stdin !== null) child.stdin.end(stdin);
     else child.stdin.end();
