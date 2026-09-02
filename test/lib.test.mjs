@@ -11,6 +11,7 @@ import {
   renderPrompt,
   resolveJobPath,
   validateJob,
+  waitForLiveWorkerCapacity,
 } from "../scripts/lib.mjs";
 
 test("security signal detection ignores non-security advisory wording", () => {
@@ -347,4 +348,78 @@ test("renderPrompt compacted cluster plan keeps live hydration metadata", () => 
   assert.match(prompt, /"created_at": "2026-06-14T00:00:00Z"/);
   assert.match(prompt, /"head_repo_owner": "contributor"/);
   assert.match(prompt, /"requested_reviewers": \[\s+"reviewer"\s+\]/);
+});
+
+test("ghRaw bounds hung GitHub CLI exec with a timeout", () => {
+  const source = fs.readFileSync(new URL("../scripts/lib.mjs", import.meta.url), "utf8");
+  assert.match(source, /function ghRaw\(/);
+  assert.match(source, /CLOWNFISH_GH_EXEC_TIMEOUT_MS/);
+  assert.match(source, /timeout:\s*timeoutMs/);
+  assert.match(source, /killSignal:\s*"SIGKILL"/);
+  assert.match(
+    source,
+    /timeout:\s*Math\.min\(\s*ghExecTimeoutMs,\s*Math\.max\(1,\s*deadline - Date\.now\(\)\)\s*\)/,
+  );
+});
+
+test("waitForLiveWorkerCapacity fails closed when gh exec hangs", { timeout: 8000 }, (t) => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "clownfish-gh-exec-timeout-"));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  const fakeGh = path.join(root, "hanging-gh");
+  fs.writeFileSync(
+    fakeGh,
+    `#!${process.execPath}
+process.on("SIGTERM", () => {});
+setInterval(() => {}, 1000);
+`,
+    { mode: 0o755 },
+  );
+
+  const started = Date.now();
+  assert.throws(
+    () =>
+      waitForLiveWorkerCapacity({
+        repo: "openclaw/clownfish",
+        workflow: "cluster-worker.yml",
+        requested: 1,
+        maxLiveWorkers: 5,
+        ghCommand: fakeGh,
+        timeoutMs: 400,
+        pollMs: 50,
+        ghTimeoutMs: 200,
+      }),
+    /timed out waiting for cluster-worker\.yml capacity/,
+  );
+  const elapsed = Date.now() - started;
+  assert.ok(elapsed < 4000, `capacity wait hung for ${elapsed}ms instead of bounding gh exec`);
+});
+
+test("waitForLiveWorkerCapacity returns when gh lists no active runs", (t) => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "clownfish-gh-exec-ok-"));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  const fakeGh = path.join(root, "fake-gh");
+  fs.writeFileSync(
+    fakeGh,
+    `#!${process.execPath}
+const args = process.argv.slice(2);
+if (args.includes("--version")) {
+  console.log("fake-gh 1.0");
+  process.exit(0);
+}
+console.log(JSON.stringify([{ workflow_runs: [] }]));
+`,
+    { mode: 0o755 },
+  );
+
+  const capacity = waitForLiveWorkerCapacity({
+    repo: "openclaw/clownfish",
+    workflow: "cluster-worker.yml",
+    requested: 1,
+    maxLiveWorkers: 5,
+    ghCommand: fakeGh,
+    timeoutMs: 2000,
+    pollMs: 50,
+  });
+  assert.equal(capacity.active, 0);
+  assert.equal(capacity.available, 5);
 });

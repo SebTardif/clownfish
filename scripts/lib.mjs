@@ -13,6 +13,7 @@ const PROMPT_STRING_MAX_CHARS = Number(process.env.CLOWNFISH_PROMPT_STRING_MAX_C
 const DEFAULT_MAX_LIVE_WORKERS = 32;
 const DEFAULT_CAPACITY_POLL_MS = 30_000;
 const DEFAULT_CAPACITY_TIMEOUT_MS = 30 * 60 * 1000;
+const DEFAULT_GH_EXEC_TIMEOUT_MS = 120_000;
 const ACTIVE_WORKFLOW_STATUSES = ["queued", "in_progress", "waiting", "requested", "pending"];
 
 export function repoRoot() {
@@ -45,10 +46,11 @@ export function liveWorkerCapacity({
   requested = 1,
   maxLiveWorkers = DEFAULT_MAX_LIVE_WORKERS,
   ghCommand = defaultGhCommand(),
+  timeout,
 } = {}) {
   const requestedCount = readNonNegativeInteger(requested, "requested");
   const max = readPositiveInteger(maxLiveWorkers, "max-live-workers");
-  const activeRuns = listActiveWorkflowRuns({ repo, workflow, ghCommand });
+  const activeRuns = listActiveWorkflowRuns({ repo, workflow, ghCommand, timeout });
   return {
     repo,
     workflow,
@@ -91,11 +93,25 @@ export function waitForLiveWorkerCapacity(options = {}) {
     options.timeoutMs ?? process.env.CLOWNFISH_LIVE_WORKER_CAPACITY_TIMEOUT_MS ?? DEFAULT_CAPACITY_TIMEOUT_MS,
     "capacity timeout ms",
   );
+  const ghExecTimeoutMs = readPositiveInteger(
+    options.ghTimeoutMs ?? process.env.CLOWNFISH_GH_EXEC_TIMEOUT_MS ?? DEFAULT_GH_EXEC_TIMEOUT_MS,
+    "gh exec timeout ms",
+  );
   const deadline = Date.now() + timeoutMs;
   let latest = null;
 
   while (Date.now() <= deadline) {
-    latest = liveWorkerCapacity(options);
+    try {
+      latest = liveWorkerCapacity({
+        ...options,
+        timeout: Math.min(ghExecTimeoutMs, Math.max(1, deadline - Date.now())),
+      });
+    } catch (error) {
+      if (!isExecTimeoutError(error)) throw error;
+      if (Date.now() > deadline) break;
+      sleepMs(Math.min(pollMs, Math.max(1, deadline - Date.now())));
+      continue;
+    }
     if (latest.requested <= latest.max_live_workers && latest.active + latest.requested <= latest.max_live_workers) {
       return latest;
     }
@@ -111,6 +127,7 @@ export function listActiveWorkflowRuns({
   repo = currentProjectRepo(),
   workflow = "cluster-worker.yml",
   ghCommand = defaultGhCommand(),
+  timeout,
 } = {}) {
   const runs = [];
   for (const status of ACTIVE_WORKFLOW_STATUSES) {
@@ -127,7 +144,7 @@ export function listActiveWorkflowRuns({
         "--paginate",
         "--slurp",
       ],
-      { ghCommand },
+      { ghCommand, timeout },
     );
     const workflowRuns = workflowPages.flatMap((page) => page.workflow_runs ?? []);
     if (Array.isArray(workflowRuns)) runs.push(...workflowRuns.map((run) => normalizeWorkflowRun(run, status)));
@@ -159,15 +176,21 @@ function ghJson(ghArgs, options = {}) {
   return JSON.parse(stripAnsi(text) || "null");
 }
 
-function ghRaw(ghArgs, { ghCommand = defaultGhCommand() } = {}) {
+function ghRaw(ghArgs, { ghCommand = defaultGhCommand(), timeout } = {}) {
   const env = { ...process.env, NO_COLOR: "1", CLICOLOR: "0" };
   delete env.FORCE_COLOR;
+  const timeoutMs = readPositiveInteger(
+    timeout ?? process.env.CLOWNFISH_GH_EXEC_TIMEOUT_MS ?? DEFAULT_GH_EXEC_TIMEOUT_MS,
+    "gh exec timeout ms",
+  );
   return execFileSync(ghCommand, ghArgs, {
     cwd: repoRoot(),
     env,
     encoding: "utf8",
     stdio: ["ignore", "pipe", "pipe"],
     maxBuffer: 64 * 1024 * 1024,
+    timeout: timeoutMs,
+    killSignal: "SIGKILL",
   });
 }
 
@@ -216,6 +239,10 @@ function readNonNegativeInteger(value, name) {
 
 function sleepMs(milliseconds) {
   Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, milliseconds);
+}
+
+function isExecTimeoutError(error) {
+  return error?.code === "ETIMEDOUT" || error?.errno === "ETIMEDOUT";
 }
 
 export function readText(relativePath) {
