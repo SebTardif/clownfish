@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { execFileSync } from "node:child_process";
+import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import { currentProjectRepo, parseArgs, repoRoot } from "./lib.mjs";
@@ -12,6 +12,10 @@ const conclusion = String(args.conclusion ?? "success");
 const threshold = args.threshold === undefined ? null : numberArg("threshold", 0);
 const json = Boolean(args.json);
 const fetch = args.fetch !== false && args.fetch !== "false";
+const execTimeoutMs = positiveNumberArg(
+  "exec-timeout-ms",
+  Number(process.env.CLOWNFISH_PUBLISH_BACKLOG_EXEC_TIMEOUT_MS ?? 120_000),
+);
 const ghCommand = String(args["gh-bin"] ?? args.gh_bin ?? process.env.CLOWNFISH_GH_BIN ?? firstAvailableCommand(["ghx", "gh"]));
 const ghRetries = numberArg("gh-retries", Number(process.env.CLOWNFISH_GH_RETRIES ?? 4));
 const ghRetryBaseMs = numberArg("gh-retry-base-ms", Number(process.env.CLOWNFISH_GH_RETRY_BASE_MS ?? 1500));
@@ -23,7 +27,7 @@ if (!["success", "failure", "cancelled", "timed_out", "action_required", "neutra
 }
 
 if (fetch) {
-  execFileSync("git", ["fetch", "origin", "main", "--quiet"], { cwd: repoRoot(), stdio: "ignore" });
+  runCommand("git", ["fetch", "origin", "main", "--quiet"], { stdio: "ignore" });
 }
 
 const publishedRunIds = readPublishedRunIds();
@@ -87,15 +91,14 @@ function listWorkflowRuns() {
 }
 
 function readPublishedRunIds() {
-  const fromOrigin = execFileSync(
-    "git",
-    ["ls-tree", "-r", "--name-only", "origin/main", "results/runs", "results/review-rejections"],
-    {
-      cwd: repoRoot(),
-      encoding: "utf8",
-      stdio: ["ignore", "pipe", "pipe"],
-    },
-  )
+  const fromOrigin = runCommand("git", [
+    "ls-tree",
+    "-r",
+    "--name-only",
+    "origin/main",
+    "results/runs",
+    "results/review-rejections",
+  ])
     .split("\n")
     .filter(Boolean)
     .filter((file) => file.startsWith("results/runs/"))
@@ -114,23 +117,13 @@ function readPublishedRunIds() {
 }
 
 function readTerminalRejectionIdsFromGit(ref) {
-  const files = execFileSync("git", ["ls-tree", "-r", "--name-only", ref, "results/review-rejections"], {
-    cwd: repoRoot(),
-    encoding: "utf8",
-    stdio: ["ignore", "pipe", "pipe"],
-  })
+  const files = runCommand("git", ["ls-tree", "-r", "--name-only", ref, "results/review-rejections"])
     .split("\n")
     .filter((file) => file.startsWith("results/review-rejections/") && file.endsWith(".json"));
   const ids = new Set();
   for (const file of files) {
     try {
-      const rejection = JSON.parse(
-        execFileSync("git", ["show", `${ref}:${file}`], {
-          cwd: repoRoot(),
-          encoding: "utf8",
-          stdio: ["ignore", "pipe", "pipe"],
-        }),
-      );
+      const rejection = JSON.parse(runCommand("git", ["show", `${ref}:${file}`]));
       const runId = validTerminalRejectionRunId(rejection);
       if (runId === path.basename(file, ".json")) ids.add(runId);
     } catch {
@@ -240,11 +233,8 @@ function ghJson(ghArgs) {
   delete env.FORCE_COLOR;
   for (let attempt = 0; ; attempt++) {
     try {
-      const output = execFileSync(ghCommand, ghArgs, {
-        cwd: repoRoot(),
+      const output = runCommand(ghCommand, ghArgs, {
         env,
-        encoding: "utf8",
-        stdio: ["ignore", "pipe", "pipe"],
         maxBuffer: 128 * 1024 * 1024,
       });
       return JSON.parse(stripAnsi(output) || "null");
@@ -278,10 +268,43 @@ function numberArg(name, fallback) {
   return value;
 }
 
+function positiveNumberArg(name, fallback) {
+  const value = numberArg(name, fallback);
+  if (value < 1) throw new Error(`--${name} must be a positive integer`);
+  return value;
+}
+
+function runCommand(command, commandArgs, options = {}) {
+  const child = spawnSync(command, commandArgs, {
+    cwd: repoRoot(),
+    encoding: "utf8",
+    stdio: ["ignore", "pipe", "pipe"],
+    ...options,
+    timeout: options.timeout ?? execTimeoutMs,
+    killSignal: options.killSignal ?? "SIGKILL",
+  });
+  if (child.error?.code === "ETIMEDOUT") {
+    const label = [command, commandArgs[0]].filter(Boolean).join(" ");
+    console.error(`${label} timed out after ${execTimeoutMs}ms`);
+    process.exit(0);
+  }
+  if (child.error) throw child.error;
+  if (child.status !== 0) {
+    const error = new Error(`${command} exited ${child.status ?? "unknown"}`);
+    error.status = child.status;
+    error.signal = child.signal;
+    error.stdout = child.stdout;
+    error.stderr = child.stderr;
+    error.output = child.output;
+    throw error;
+  }
+  return child.stdout ?? "";
+}
+
 function firstAvailableCommand(commands) {
   for (const command of commands) {
     try {
-      execFileSync(command, ["--version"], { cwd: repoRoot(), stdio: "ignore" });
+      runCommand(command, ["--version"], { stdio: "ignore" });
       return command;
     } catch {
       continue;

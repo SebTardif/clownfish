@@ -151,6 +151,44 @@ test("publish backlog keeps exact IDs for single cluster workers", () => {
   assert.deepEqual(summary.missing_run_ids, ["300"]);
 });
 
+test("publish-backlog bounds git and gh children and treats timeout as blocked", () => {
+  const source = fs.readFileSync(path.join(repoRoot, "scripts", "publish-backlog.mjs"), "utf8");
+
+  assert.match(source, /CLOWNFISH_PUBLISH_BACKLOG_EXEC_TIMEOUT_MS/);
+  assert.match(source, /spawnSync\(/);
+  assert.match(source, /timeout:\s*(?:options\.timeout\s*\?\?\s*)?execTimeoutMs/);
+  assert.match(source, /killSignal:\s*(?:options\.killSignal\s*\?\?\s*)?"SIGKILL"/);
+  assert.match(source, /child\.error\?\.code === "ETIMEDOUT"/);
+  assert.match(source, /process\.exit\(0\)/);
+  assert.doesNotMatch(source, /execFileSync\(/);
+});
+
+test("publish backlog exits 0 when git hangs past the exec timeout", () => {
+  assertBlockedTimeout(
+    runPublishBacklog({
+      workflow: "cluster-worker.yml",
+      runs: [completedRun(300, 1)],
+      publishedRunIds: ["300"],
+      hangGit: true,
+      execTimeoutMs: 1000,
+    }),
+    "git",
+  );
+});
+
+test("publish backlog exits 0 when gh hangs past the exec timeout", () => {
+  assertBlockedTimeout(
+    runPublishBacklog({
+      workflow: "cluster-worker.yml",
+      runs: [completedRun(300, 1)],
+      publishedRunIds: ["300"],
+      hangGhx: true,
+      execTimeoutMs: 1000,
+    }),
+    "gh",
+  );
+});
+
 function makeFixture() {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "clownfish-dispatch-publish-backlog-"));
   return {
@@ -166,45 +204,62 @@ function runPublishBacklog({
   runAttemptsByRunId = {},
   publishedRunIds,
   terminalRejections = [],
+  hangGit = false,
+  hangGhx = false,
+  execTimeoutMs,
 }) {
   const fixture = makeFixture();
   writeFakeGhx(fixture);
   writeFakeGit(fixture);
 
-  return spawnSync(
-    process.execPath,
-    [
-      "scripts/publish-backlog.mjs",
-      "--repo",
-      "openclaw/clownfish",
-      "--workflow",
-      workflow,
-      "--lookback",
-      "10",
-      "--conclusion",
-      "success",
-      "--threshold",
-      "0",
-      "--fetch",
-      "false",
-      "--gh-bin",
-      fixture.gh,
-      "--json",
-    ],
-    {
-      cwd: repoRoot,
-      encoding: "utf8",
-      env: {
-        ...process.env,
-        PATH: `${fixture.bin}${path.delimiter}${process.env.PATH ?? ""}`,
-        FAKE_GHX_RUNS: JSON.stringify(runs),
-        FAKE_GHX_ARTIFACTS: JSON.stringify(artifactsByRunId),
-        FAKE_GHX_RUN_ATTEMPTS: JSON.stringify(runAttemptsByRunId),
-        FAKE_GIT_PUBLISHED_RUN_IDS: JSON.stringify(publishedRunIds),
-        FAKE_GIT_TERMINAL_REJECTIONS: JSON.stringify(terminalRejections),
-      },
+  const argv = [
+    "scripts/publish-backlog.mjs",
+    "--repo",
+    "openclaw/clownfish",
+    "--workflow",
+    workflow,
+    "--lookback",
+    "10",
+    "--conclusion",
+    "success",
+    "--threshold",
+    "0",
+    "--fetch",
+    "false",
+    "--gh-bin",
+    fixture.gh,
+    "--json",
+  ];
+  if (execTimeoutMs !== undefined) argv.push("--exec-timeout-ms", String(execTimeoutMs));
+
+  const startedAt = Date.now();
+  const child = spawnSync(process.execPath, argv, {
+    cwd: repoRoot,
+    encoding: "utf8",
+    timeout: 10000,
+    killSignal: "SIGKILL",
+    env: {
+      ...process.env,
+      PATH: `${fixture.bin}${path.delimiter}${process.env.PATH ?? ""}`,
+      FAKE_GHX_RUNS: JSON.stringify(runs),
+      FAKE_GHX_ARTIFACTS: JSON.stringify(artifactsByRunId),
+      FAKE_GHX_RUN_ATTEMPTS: JSON.stringify(runAttemptsByRunId),
+      FAKE_GIT_PUBLISHED_RUN_IDS: JSON.stringify(publishedRunIds),
+      FAKE_GIT_TERMINAL_REJECTIONS: JSON.stringify(terminalRejections),
+      FAKE_GIT_HANG: hangGit ? "1" : "",
+      FAKE_GHX_HANG: hangGhx ? "1" : "",
     },
-  );
+  });
+  child.elapsedMs = Date.now() - startedAt;
+  return child;
+}
+
+function assertBlockedTimeout(result, command) {
+  assert.equal(result.error, undefined, `publish-backlog exceeded the outer deadline: ${result.stderr}`);
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  assert.match(result.stderr, /timed out after 1000ms/);
+  if (command === "git") assert.match(result.stderr, /\bgit\b/);
+  assert.ok(result.elapsedMs < 8000, `hung for ${result.elapsedMs}ms`);
 }
 
 function completedRun(databaseId, runAttempt = undefined) {
@@ -227,7 +282,10 @@ if (args[0] === "--version") {
   console.log("fake-ghx 1.0");
   process.exit(0);
 }
-if (args[0] === "run" && args[1] === "list") {
+if (process.env.FAKE_GHX_HANG === "1") {
+  process.on("SIGTERM", () => {});
+  setInterval(() => {}, 1000);
+} else if (args[0] === "run" && args[1] === "list") {
   if (process.env.FAKE_GHX_RUNS) {
     console.log(process.env.FAKE_GHX_RUNS);
     process.exit(0);
@@ -241,8 +299,7 @@ if (args[0] === "run" && args[1] === "list") {
     console.log("[]");
   }
   process.exit(0);
-}
-if (args[0] === "api") {
+} else if (args[0] === "api") {
   if (process.env.FAKE_GHX_ARTIFACTS) {
     const endpoint = args.find((arg) => arg.includes("/actions/runs/"));
     const runId = endpoint?.match(/\\/actions\\/runs\\/(\\d+)/)?.[1];
@@ -256,10 +313,12 @@ if (args[0] === "api") {
   }
   console.log("[]");
   process.exit(0);
+} else if (args[0] === "workflow" && args[1] === "run") {
+  process.exit(0);
+} else {
+  console.error("unexpected fake ghx args: " + args.join(" "));
+  process.exit(1);
 }
-if (args[0] === "workflow" && args[1] === "run") process.exit(0);
-console.error("unexpected fake ghx args: " + args.join(" "));
-process.exit(1);
 `,
     { mode: 0o755 },
   );
@@ -272,7 +331,10 @@ function writeFakeGit(fixture) {
     path.join(fixture.bin, "git"),
     `#!/usr/bin/env node
 const args = process.argv.slice(2);
-if (args[0] === "ls-tree") {
+if (process.env.FAKE_GIT_HANG === "1") {
+  process.on("SIGTERM", () => {});
+  setInterval(() => {}, 1000);
+} else if (args[0] === "ls-tree") {
   const runIds = JSON.parse(process.env.FAKE_GIT_PUBLISHED_RUN_IDS ?? "[]");
   const terminalRejections = JSON.parse(process.env.FAKE_GIT_TERMINAL_REJECTIONS ?? "[]");
   const wantsRuns = args.includes("results/runs");
@@ -283,8 +345,7 @@ if (args[0] === "ls-tree") {
   ];
   process.stdout.write(files.join("\\n"));
   process.exit(0);
-}
-if (args[0] === "show") {
+} else if (args[0] === "show") {
   const terminalRejections = JSON.parse(process.env.FAKE_GIT_TERMINAL_REJECTIONS ?? "[]");
   const file = String(args[1] ?? "").split(":").at(-1);
   const runId = file.split("/").at(-1).replace(/\\.json$/, "");
@@ -295,9 +356,10 @@ if (args[0] === "show") {
   }
   process.stderr.write("missing terminal rejection: " + file + "\\n");
   process.exit(1);
+} else {
+  process.stderr.write("unexpected git invocation: " + args.join(" ") + "\\n");
+  process.exit(1);
 }
-process.stderr.write("unexpected git invocation: " + args.join(" ") + "\\n");
-process.exit(1);
 `,
     { mode: 0o755 },
   );
