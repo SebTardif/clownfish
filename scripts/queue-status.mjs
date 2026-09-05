@@ -24,6 +24,7 @@ const dispatchLedgerPath = path.resolve(
 const dispatchRepo = String(args.repo ?? currentProjectRepo());
 const jsonOutput = Boolean(args.json);
 const skipSecretCheck = Boolean(args["skip-secret-check"] ?? args.skip_secret_check);
+const DEFAULT_SECRET_LIST_TIMEOUT_MS = 2 * 60 * 1000;
 const allowAppTokenAuth = Boolean(
   args["allow-app-token-auth"] ?? args.allow_app_token_auth ?? process.env.CLOWNFISH_ALLOW_APP_TOKEN_AUTH === "1",
 );
@@ -331,22 +332,51 @@ function readDispatchAttemptsByJob() {
   return out;
 }
 
+function resolveSecretListTimeoutMs() {
+  const timeoutMs = Number(process.env.CLOWNFISH_QUEUE_STATUS_SECRET_LIST_TIMEOUT_MS ?? DEFAULT_SECRET_LIST_TIMEOUT_MS);
+  return Number.isInteger(timeoutMs) && timeoutMs > 0 ? timeoutMs : DEFAULT_SECRET_LIST_TIMEOUT_MS;
+}
+
 function readSecretNames(repo) {
-  const result = execFileSync(ghCommand(), ["secret", "list", "--repo", repo, "--json", "name"], {
-    cwd: repoRoot(),
-    encoding: "utf8",
-    stdio: ["ignore", "pipe", "pipe"],
-  });
-  return new Set(JSON.parse(stripAnsi(result)).map((secret) => String(secret.name)));
+  const secretListTimeoutMs = resolveSecretListTimeoutMs();
+  try {
+    const result = execFileSync(ghCommand(), ["secret", "list", "--repo", repo, "--json", "name"], {
+      cwd: repoRoot(),
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "pipe"],
+      timeout: secretListTimeoutMs,
+      killSignal: "SIGKILL",
+    });
+    return new Set(JSON.parse(stripAnsi(result)).map((secret) => String(secret.name)));
+  } catch (error) {
+    console.warn(
+      `warning: could not inspect repo secrets for ${repo}; skipping token-secret preflight\n${inspectGhError(error)}`,
+    );
+    return null;
+  }
 }
 
 function readVariableNames(repo) {
-  const result = execFileSync(ghCommand(), ["variable", "list", "--repo", repo, "--json", "name"], {
-    cwd: repoRoot(),
-    encoding: "utf8",
-    stdio: ["ignore", "pipe", "pipe"],
-  });
-  return new Set(JSON.parse(stripAnsi(result)).map((variable) => String(variable.name)));
+  const secretListTimeoutMs = resolveSecretListTimeoutMs();
+  try {
+    const result = execFileSync(ghCommand(), ["variable", "list", "--repo", repo, "--json", "name"], {
+      cwd: repoRoot(),
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "pipe"],
+      timeout: secretListTimeoutMs,
+      killSignal: "SIGKILL",
+    });
+    return new Set(JSON.parse(stripAnsi(result)).map((variable) => String(variable.name)));
+  } catch (error) {
+    console.warn(
+      `warning: could not inspect repo variables for ${repo}; App-token preflight may be incomplete\n${inspectGhError(error)}`,
+    );
+    return null;
+  }
+}
+
+function inspectGhError(error) {
+  return String(error?.stderr || error?.stdout || error?.message || error);
 }
 
 function summarizeAuth({ secrets, variables, targetRepos }) {
