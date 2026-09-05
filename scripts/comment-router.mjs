@@ -56,6 +56,7 @@ const DEFAULT_LABEL_DESCRIPTION = "Tracked by Clownfish automation";
 const DEFAULT_ALLOWED_ASSOCIATIONS = ["OWNER", "MEMBER", "COLLABORATOR"];
 const DEFAULT_TRUSTED_BOTS = ["clawsweeper[bot]", "openclaw-clawsweeper[bot]"];
 const DEFAULT_CLOWNFISH_AUTHORS = ["openclaw-clownfish", "openclaw-clownfish[bot]"];
+const DEFAULT_GH_TIMEOUT_MS = 2 * 60 * 1000;
 
 const args = parseArgs(process.argv.slice(2));
 const targetRepo = String(args.repo ?? process.env.CLOWNFISH_TARGET_REPO ?? DEFAULT_TARGET_REPO);
@@ -815,6 +816,7 @@ function dispatchClawSweeperReview(command) {
       item_kind: "pull_request",
     },
   });
+  const ghTimeoutMs = resolveGhTimeoutMs();
   const result = spawnSync(
     "gh",
     [
@@ -835,6 +837,8 @@ function dispatchClawSweeperReview(command) {
       ),
       input: payload,
       stdio: "pipe",
+      timeout: ghTimeoutMs,
+      killSignal: "SIGKILL",
     },
   );
   if (result.status !== 0) {
@@ -866,13 +870,15 @@ function dispatchClawSweeperReview(command) {
             : {},
         ),
         stdio: "pipe",
+        timeout: ghTimeoutMs,
+        killSignal: "SIGKILL",
       },
     );
     if (fallback.status !== 0) {
       throw new Error(
         `failed to dispatch ClawSweeper review for #${command.issue_number}: repository_dispatch=${
-          result.stderr || result.stdout
-        }; workflow_dispatch=${fallback.stderr || fallback.stdout}`,
+          describeGhChild(result, ghTimeoutMs)
+        }; workflow_dispatch=${describeGhChild(fallback, ghTimeoutMs)}`,
       );
     }
     return {
@@ -892,6 +898,7 @@ function dispatchClawSweeperReview(command) {
 }
 
 function dispatchRepair(command) {
+  const ghTimeoutMs = resolveGhTimeoutMs();
   const result = spawnSync(
     "gh",
     [
@@ -911,10 +918,17 @@ function dispatchRepair(command) {
       "-f",
       `model=${model}`,
     ],
-    { cwd: repoRoot(), encoding: "utf8", env: ghEnv(), stdio: "pipe" },
+    {
+      cwd: repoRoot(),
+      encoding: "utf8",
+      env: ghEnv(),
+      stdio: "pipe",
+      timeout: ghTimeoutMs,
+      killSignal: "SIGKILL",
+    },
   );
   if (result.status !== 0) {
-    throw new Error(`failed to dispatch ${command.target.job_path}: ${result.stderr || result.stdout}`);
+    throw new Error(`failed to dispatch ${command.target.job_path}: ${describeGhChild(result, ghTimeoutMs)}`);
   }
   return {
     workflow,
@@ -1085,6 +1099,7 @@ function executeAutomerge(command) {
     ghBestEffort(["issue", "edit", String(command.issue_number), "--repo", command.repo, "--add-label", label]);
     return { action: "merge", status: "blocked", reason: gateBlock, merge_method: "squash" };
   }
+  const ghTimeoutMs = resolveGhTimeoutMs();
   const result = spawnSync(
     "gh",
     buildAutomergeMergeArgs({
@@ -1097,13 +1112,15 @@ function executeAutomerge(command) {
       encoding: "utf8",
       env: ghEnv(),
       stdio: "pipe",
+      timeout: ghTimeoutMs,
+      killSignal: "SIGKILL",
     },
   );
   if (result.status !== 0) {
     return {
       action: "merge",
       status: "blocked",
-      reason: `merge command failed: ${stripAnsi(result.stderr || result.stdout).trim()}`,
+      reason: `merge command failed: ${describeGhChild(result, ghTimeoutMs)}`,
       merge_method: "squash",
     };
   }
@@ -1513,15 +1530,35 @@ function ghPaged(apiPath) {
   return pages.flatMap((page) => (Array.isArray(page) ? page : []));
 }
 
+function resolveGhTimeoutMs() {
+  const timeoutMs = Number(process.env.CLOWNFISH_COMMENT_ROUTER_GH_TIMEOUT_MS ?? DEFAULT_GH_TIMEOUT_MS);
+  return Number.isInteger(timeoutMs) && timeoutMs > 0 ? timeoutMs : DEFAULT_GH_TIMEOUT_MS;
+}
+
+function describeGhChild(result, timeoutMs) {
+  if (result.error?.code === "ETIMEDOUT") return `timed out after ${timeoutMs}ms`;
+  return stripAnsi(result.stderr || result.stdout || result.error?.message || "").trim();
+}
+
 function ghText(ghArgs) {
-  const text = execFileSync("gh", ghArgs, {
-    cwd: repoRoot(),
-    env: ghEnv(),
-    encoding: "utf8",
-    maxBuffer: 64 * 1024 * 1024,
-    stdio: ["ignore", "pipe", "pipe"],
-  });
-  return stripAnsi(text).trim();
+  const ghTimeoutMs = resolveGhTimeoutMs();
+  try {
+    const text = execFileSync("gh", ghArgs, {
+      cwd: repoRoot(),
+      env: ghEnv(),
+      encoding: "utf8",
+      maxBuffer: 64 * 1024 * 1024,
+      stdio: ["ignore", "pipe", "pipe"],
+      timeout: ghTimeoutMs,
+      killSignal: "SIGKILL",
+    });
+    return stripAnsi(text).trim();
+  } catch (error) {
+    if (error?.code === "ETIMEDOUT") {
+      throw new Error(`gh ${ghArgs.join(" ")} timed out after ${ghTimeoutMs}ms`);
+    }
+    throw error;
+  }
 }
 
 function ghBestEffort(ghArgs) {
