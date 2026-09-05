@@ -20,6 +20,7 @@ import {
   replacementSourceLinkComment,
 } from "./external-messages.mjs";
 import { evaluateValidationBaseDrift } from "./base-drift-validation.mjs";
+import { removeCreatedWorkRoot } from "./remove-created-work-root.mjs";
 
 const FIX_ACTIONS = new Set(["fix_needed", "build_fix_artifact", "open_fix_pr"]);
 const REPAIR_STRATEGIES = new Set(["repair_contributor_branch", "replace_uneditable_branch", "new_fix_pr"]);
@@ -112,6 +113,7 @@ const codexWriteNetworkAccess = parseBooleanEnv(
 );
 const codexReviewNetworkAccess = parseBooleanEnv(process.env.CLOWNFISH_CODEX_REVIEW_NETWORK_ACCESS, false);
 let workRoot = "";
+let createdWorkRoot = false;
 let targetDir = "";
 let activeFixProgress = null;
 let writePreflight = null;
@@ -310,6 +312,8 @@ if (liveTargetPolicyBlock) {
 
 let outcome;
 try {
+try {
+  createdWorkRoot = typeof args["work-dir"] !== "string";
   workRoot =
     typeof args["work-dir"] === "string"
       ? path.resolve(args["work-dir"])
@@ -344,6 +348,7 @@ try {
       source_pr: validationPreflight.source_pr,
     });
     writeReport(report, resultPath);
+    removeCreatedWorkRoot(workRoot, createdWorkRoot);
     process.exit(0);
   }
 
@@ -367,6 +372,7 @@ try {
         evidence: writePreflight?.evidence,
       });
       writeReport(report, resultPath);
+      removeCreatedWorkRoot(workRoot, createdWorkRoot);
       process.exit(0);
     }
   }
@@ -443,6 +449,9 @@ report.status = outcome.status;
 if (outcome.reason && !report.reason) report.reason = outcome.reason;
 report.actions.push(outcome);
 writeReport(report, resultPath);
+} finally {
+  removeCreatedWorkRoot(workRoot, createdWorkRoot);
+}
 
 function isBlockedFixError(error) {
   return /fix execution deadline exceeded|timed out after \d+ms before fix execution deadline|source PR #\d+ head fetch failed after \d+ attempt\(s\):|Codex produced no target repo changes|Codex \/review did not pass|Codex (?:fix worker|validation-fix worker|review-fix worker|rebase-fix worker|\/review) timed out|Codex (?:fix worker|validation-fix worker|review-fix worker|rebase-fix worker|\/review) failed|could not repair rebase conflicts|validation command failed|base branch advanced after validation/i.test(
@@ -4401,6 +4410,7 @@ function installEmergencyFixReportHandlers({ report, resultPath, fixArtifact }) 
       } catch (error) {
         console.error(`could not write emergency fix report after ${signal}: ${compactText(error?.message ?? error, 500)}`);
       } finally {
+        removeCreatedWorkRoot(workRoot, createdWorkRoot);
         process.exit(signalExitCode(signal));
       }
     });
