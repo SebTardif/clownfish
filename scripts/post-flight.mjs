@@ -21,6 +21,7 @@ const CLOWNFISH_LABEL_COLOR = "F97316";
 const CLOWNFISH_LABEL_DESCRIPTION = "Tracked by Clownfish automation";
 const POST_FLIGHT_WAIT_MS = numberEnv("CLOWNFISH_POST_FLIGHT_WAIT_MS", 10 * 60 * 1000);
 const POST_FLIGHT_POLL_MS = numberEnv("CLOWNFISH_POST_FLIGHT_POLL_MS", 15 * 1000);
+const DEFAULT_GH_TIMEOUT_MS = 2 * 60 * 1000;
 
 const args = parseArgs(process.argv.slice(2));
 const jobPath = args._[0];
@@ -522,9 +523,15 @@ function ghJson(ghArgs) {
   return JSON.parse(stripAnsi(text) || "null");
 }
 
+function resolveGhTimeoutMs() {
+  const timeoutMs = Number(process.env.CLOWNFISH_POST_FLIGHT_GH_TIMEOUT_MS ?? DEFAULT_GH_TIMEOUT_MS);
+  return Number.isInteger(timeoutMs) && timeoutMs > 0 ? timeoutMs : DEFAULT_GH_TIMEOUT_MS;
+}
+
 function ghWithRetry(ghArgs, attempts = 6) {
   const env = { ...process.env, NO_COLOR: "1", CLICOLOR: "0" };
   delete env.FORCE_COLOR;
+  const ghTimeoutMs = resolveGhTimeoutMs();
   let lastError;
   for (let attempt = 0; attempt < attempts; attempt += 1) {
     try {
@@ -534,9 +541,16 @@ function ghWithRetry(ghArgs, attempts = 6) {
         env,
         maxBuffer: 64 * 1024 * 1024,
         stdio: ["ignore", "pipe", "pipe"],
+        timeout: ghTimeoutMs,
+        killSignal: "SIGKILL",
       }).trim();
     } catch (error) {
       lastError = error;
+      if (error?.code === "ETIMEDOUT") {
+        const timeoutError = new Error(`gh ${ghArgs.join(" ")} timed out after ${ghTimeoutMs}ms`);
+        timeoutError.code = "ETIMEDOUT";
+        throw timeoutError;
+      }
       if (!shouldRetryGh(error) || attempt === attempts - 1) throw error;
       sleepMs(Math.min(120_000, 10_000 * 2 ** attempt));
     }
