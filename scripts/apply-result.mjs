@@ -34,6 +34,7 @@ const CLOWNFISH_LABEL_DESCRIPTION = "Tracked by Clownfish automation";
 const DEFAULT_REQUIRED_CI_GATE_APP_ID = 15368;
 const DEFAULT_REQUIRED_CI_GATE_MAX_AGE_HOURS = 24;
 const DEFAULT_REQUIRED_CI_WORKFLOW_PATH = ".github/workflows/ci.yml";
+const DEFAULT_GH_TIMEOUT_MS = 2 * 60 * 1000;
 let activeExactMergeAuthorization = null;
 let exactMergeCleanupRunning = false;
 
@@ -1252,13 +1253,7 @@ function labelForClownfishReview(repo, target) {
 
 function ensureLabel(repo, name, color, description) {
   try {
-    execFileSync("gh", ["label", "create", name, "--repo", repo, "--color", color, "--description", description], {
-      cwd: repoRoot(),
-      encoding: "utf8",
-      env: process.env,
-      stdio: ["ignore", "pipe", "pipe"],
-      maxBuffer: 8 * 1024 * 1024,
-    });
+    ghOnce(["label", "create", name, "--repo", repo, "--color", color, "--description", description]);
   } catch (error) {
     const detail = commandErrorText(error);
     if (!/already exists/i.test(detail)) return;
@@ -3108,6 +3103,11 @@ function ghPaged(apiPath) {
   return pages.flatMap((page) => (Array.isArray(page) ? page : []));
 }
 
+function resolveGhTimeoutMs() {
+  const timeoutMs = Number(process.env.CLOWNFISH_APPLY_GH_TIMEOUT_MS ?? DEFAULT_GH_TIMEOUT_MS);
+  return Number.isInteger(timeoutMs) && timeoutMs > 0 ? timeoutMs : DEFAULT_GH_TIMEOUT_MS;
+}
+
 function ghWithRetry(ghArgs, attempts = 6, env = githubCliEnv()) {
   let lastError;
   for (let attempt = 0; attempt < attempts; attempt += 1) {
@@ -3115,7 +3115,7 @@ function ghWithRetry(ghArgs, attempts = 6, env = githubCliEnv()) {
       return ghOnce(ghArgs, env);
     } catch (error) {
       lastError = error;
-      if (!shouldRetryGh(error) || attempt === attempts - 1) throw error;
+      if (error?.code === "ETIMEDOUT" || !shouldRetryGh(error) || attempt === attempts - 1) throw error;
       const baseDelayMs = positiveInteger(process.env.CLOWNFISH_GH_RETRY_BASE_MS, 10_000);
       sleepMs(Math.min(120_000, baseDelayMs * 2 ** attempt));
     }
@@ -3124,13 +3124,25 @@ function ghWithRetry(ghArgs, attempts = 6, env = githubCliEnv()) {
 }
 
 function ghOnce(ghArgs, env = githubCliEnv()) {
-  return execFileSync("gh", ghArgs, {
-    cwd: repoRoot(),
-    encoding: "utf8",
-    env,
-    maxBuffer: 64 * 1024 * 1024,
-    stdio: ["ignore", "pipe", "pipe"],
-  }).trim();
+  const ghTimeoutMs = resolveGhTimeoutMs();
+  try {
+    return execFileSync("gh", ghArgs, {
+      cwd: repoRoot(),
+      encoding: "utf8",
+      env,
+      maxBuffer: 64 * 1024 * 1024,
+      stdio: ["ignore", "pipe", "pipe"],
+      timeout: ghTimeoutMs,
+      killSignal: "SIGKILL",
+    }).trim();
+  } catch (error) {
+    if (error?.code === "ETIMEDOUT") {
+      const timeoutError = new Error(`gh ${ghArgs.join(" ")} timed out after ${ghTimeoutMs}ms`);
+      timeoutError.code = "ETIMEDOUT";
+      throw timeoutError;
+    }
+    throw error;
+  }
 }
 
 function githubCliEnv({ ghToken } = {}) {
