@@ -1510,6 +1510,33 @@ for (const [name, restMerge, graphMerge] of [
   });
 }
 
+test("external merge preflight blocks a failing legacy status context", () => {
+  const fixture = makeFixture({
+    mergeStateStatus: "UNSTABLE",
+    statusCheckRollup: [{ context: "legacy-ci", state: "FAILURE" }],
+  });
+  const { report } = runPreflightFixture(fixture);
+  assert.equal(report.status, "blocked");
+  assert.match(report.reason, /non-passing checks: legacy-ci/);
+});
+
+test("external merge preflight blocks pending checks on an unstable head", () => {
+  const fixture = makeFixture({
+    mergeStateStatus: "UNSTABLE",
+    statusCheckRollup: [
+      {
+        name: "CI",
+        workflowName: "CI",
+        status: "IN_PROGRESS",
+        startedAt: "2026-07-06T20:25:00Z",
+      },
+    ],
+  });
+  const { report } = runPreflightFixture(fixture);
+  assert.equal(report.status, "blocked");
+  assert.match(report.reason, /non-passing checks: CI/);
+});
+
 for (const mergeStateStatus of ["BLOCKED", "BEHIND"]) {
   test(`external merge preflight accepts ${mergeStateStatus.toLowerCase()} state for exact review`, () => {
     const fixture = makeFixture({
