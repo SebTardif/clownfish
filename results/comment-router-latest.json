@@ -1,17 +1,17 @@
 {
   "status": "executed",
   "mode": "route",
-  "generated_at": "2026-09-30T07:29:25.824Z",
+  "generated_at": "2026-09-30T07:48:59.088Z",
   "repo": "openclaw/openclaw",
   "clownfish_repo": "openclaw/clownfish",
   "clawsweeper_repo": "openclaw/clawsweeper",
-  "since": "2026-09-30T04:28:35.700Z",
+  "since": "2026-09-30T04:48:22.938Z",
   "execute": true,
   "max_comments": 100,
   "requested_comment_ids": [],
-  "all_comments_scanned": 802,
+  "all_comments_scanned": 782,
   "max_autoclose_targets": 8,
-  "scanned_comments": 802,
+  "scanned_comments": 782,
   "commands_seen": 100,
   "actionable": 0,
   "deferred_merge_comments": 0,
@@ -28,17 +28,480 @@
   "max_auto_repairs_per_pr": 5,
   "commands": [
     {
-      "idempotency_key": "clawsweeper-repair:openclaw/openclaw:161718:5906349369:2026-09-30T07:28:26Z:clawsweeper_auto_repair",
+      "idempotency_key": "clawsweeper-repair:openclaw/openclaw:161731:5906633484:2026-09-30T07:47:20Z:clawsweeper_auto_repair",
+      "comment_id": "5906633484",
+      "comment_node_id": "IC_kwDOQb6kR88AAAABYBATDA",
+      "comment_version_key": "5906633484:2026-09-30T07:47:20Z",
+      "comment_url": "https://github.com/openclaw/openclaw/pull/161731#issuecomment-5906633484",
+      "repo": "openclaw/openclaw",
+      "issue_number": 161731,
+      "author": "clawsweeper[bot]",
+      "author_association": "CONTRIBUTOR",
+      "comment_created_at": "2026-09-30T07:47:20Z",
+      "comment_updated_at": "2026-09-30T07:47:20Z",
+      "trigger": "trusted_bot",
+      "command": "clawsweeper auto repair",
+      "intent": "clawsweeper_auto_repair",
+      "autoclose_message": null,
+      "trusted_bot": true,
+      "trusted_bot_author": "clawsweeper[bot]",
+      "automation_source": "clawsweeper",
+      "repair_reason": "structured ClawSweeper verdict: needs-human (sha=2d90f048dd1f5fe840f90c2375b22fef3ce4cce2)",
+      "expected_head_sha": "2d90f048dd1f5fe840f90c2375b22fef3ce4cce2",
+      "finding_id": null,
+      "status": "skipped",
+      "actions": [],
+      "target": {
+        "kind": "pull_request",
+        "title": "improve(build): speed up declaration input checks",
+        "branch": "improve/declaration-input-checks",
+        "head_sha": "2d90f048dd1f5fe840f90c2375b22fef3ce4cce2",
+        "author": "shenrui-ma",
+        "labels": [
+          "scripts",
+          "size: S",
+          "proof: sufficient",
+          "P3",
+          "rating: 🐚 platinum hermit",
+          "status: 👀 ready for maintainer look"
+        ],
+        "is_clownfish_pr": false,
+        "cluster_id": null,
+        "job_path": null,
+        "automerge_cluster_id": "automerge-openclaw-openclaw-161731",
+        "automerge_job_path": "jobs/openclaw/inbox/automerge-openclaw-openclaw-161731.md",
+        "mode": "autonomous",
+        "merge_state_status": "BLOCKED",
+        "review_decision": "",
+        "checks": {
+          "total": 161,
+          "counts": {
+            "CANCELLED": 1,
+            "SKIPPED": 42,
+            "SUCCESS": 78,
+            "IN_PROGRESS": 38,
+            "PENDING": 1,
+            "NEUTRAL": 1
+          },
+          "blockers": [
+            "auto-response:CANCELLED",
+            "build-artifacts:IN_PROGRESS",
+            "checks-ui-e2e (1/1):IN_PROGRESS",
+            "checks-ui-e2e-real-gateway (1/2):IN_PROGRESS",
+            "checks-ui-e2e-real-gateway (2/2):IN_PROGRESS",
+            "checks-node-compact-small-22:IN_PROGRESS",
+            "checks-node-compact-small-11:IN_PROGRESS",
+            "checks-node-compact-small-18:IN_PROGRESS",
+            "checks-node-changed-compact-small-12:IN_PROGRESS",
+            "checks-node-changed-extensions-bundle-1:IN_PROGRESS",
+            "checks-node-changed-compact-large-34:IN_PROGRESS",
+            "checks-node-changed-compact-large-18:IN_PROGRESS",
+            "checks-node-changed-compact-large-39:IN_PROGRESS",
+            "checks-node-changed-compact-small-11:IN_PROGRESS",
+            "checks-node-compact-small-21-1:IN_PROGRESS",
+            "checks-node-compact-small-20:IN_PROGRESS",
+            "checks-node-compact-small-17:IN_PROGRESS",
+            "checks-node-changed-extensions-bundle-2:IN_PROGRESS",
+            "checks-node-changed-compact-large-38:IN_PROGRESS",
+            "checks-node-changed-compact-large-15:IN_PROGRESS",
+            "checks-node-compact-small-15-1:IN_PROGRESS",
+            "checks-node-compact-small-23:IN_PROGRESS",
+            "checks-node-changed-compact-large-41:IN_PROGRESS",
+            "checks-node-compact-small-12:IN_PROGRESS",
+            "checks-node-compact-small-19:IN_PROGRESS",
+            "checks-node-compact-small-16:IN_PROGRESS",
+            "check-additional-extension-package-boundary:IN_PROGRESS",
+            "check-additional-runtime-topology-architecture:IN_PROGRESS",
+            "pr-fail-fast:IN_PROGRESS",
+            "check-lint:IN_PROGRESS",
+            "check-dependencies:IN_PROGRESS",
+            "check-lint-core-1:IN_PROGRESS",
+            "check-lint-core-2:IN_PROGRESS",
+            "check-lint-core-3:IN_PROGRESS",
+            "check-lint-core-4:IN_PROGRESS",
+            "check-test-types-core-2:IN_PROGRESS",
+            "check-test-types-core-3:IN_PROGRESS",
+            "check-test-types-core-4:IN_PROGRESS",
+            "check-test-types-core-5:IN_PROGRESS",
+            "openclaw/ci-gate:PENDING"
+          ]
+        }
+      },
+      "reason": "repair commands require a Clownfish PR or a PR opted into Clownfish automerge"
+    },
+    {
+      "idempotency_key": "clawsweeper-repair:openclaw/openclaw:161725:5906629772:2026-09-30T07:47:05Z:clawsweeper_auto_repair",
+      "comment_id": "5906629772",
+      "comment_node_id": "IC_kwDOQb6kR88AAAABYBAEjA",
+      "comment_version_key": "5906629772:2026-09-30T07:47:05Z",
+      "comment_url": "https://github.com/openclaw/openclaw/pull/161725#issuecomment-5906629772",
+      "repo": "openclaw/openclaw",
+      "issue_number": 161725,
+      "author": "clawsweeper[bot]",
+      "author_association": "CONTRIBUTOR",
+      "comment_created_at": "2026-09-30T07:47:05Z",
+      "comment_updated_at": "2026-09-30T07:47:05Z",
+      "trigger": "trusted_bot",
+      "command": "clawsweeper auto repair",
+      "intent": "clawsweeper_auto_repair",
+      "autoclose_message": null,
+      "trusted_bot": true,
+      "trusted_bot_author": "clawsweeper[bot]",
+      "automation_source": "clawsweeper",
+      "repair_reason": "structured ClawSweeper verdict: needs-human (sha=3bfdc657e97c65a6a482609ad63a5d344ab45623)",
+      "expected_head_sha": "3bfdc657e97c65a6a482609ad63a5d344ab45623",
+      "finding_id": null,
+      "status": "skipped",
+      "actions": [],
+      "target": {
+        "kind": "pull_request",
+        "title": "fix(ci): remove stale vision-test max-lines allowance",
+        "branch": "fix/test-audit-vision-max-lines-20260930",
+        "head_sha": "3bfdc657e97c65a6a482609ad63a5d344ab45623",
+        "author": "vincentkoc",
+        "labels": [
+          "size: XS",
+          "P3",
+          "rating: 🐚 platinum hermit",
+          "status: 👀 ready for maintainer look"
+        ],
+        "is_clownfish_pr": false,
+        "cluster_id": null,
+        "job_path": null,
+        "automerge_cluster_id": "automerge-openclaw-openclaw-161725",
+        "automerge_job_path": "jobs/openclaw/inbox/automerge-openclaw-openclaw-161725.md",
+        "mode": "autonomous",
+        "merge_state_status": "CLEAN",
+        "review_decision": "",
+        "checks": {
+          "total": 189,
+          "counts": {
+            "SKIPPED": 88,
+            "SUCCESS": 101
+          },
+          "blockers": []
+        }
+      },
+      "reason": "repair commands require a Clownfish PR or a PR opted into Clownfish automerge"
+    },
+    {
+      "idempotency_key": "clawsweeper-repair:openclaw/openclaw:161730:5906623523:2026-09-30T07:46:41Z:clawsweeper_auto_repair",
+      "comment_id": "5906623523",
+      "comment_node_id": "IC_kwDOQb6kR88AAAABYA_sIw",
+      "comment_version_key": "5906623523:2026-09-30T07:46:41Z",
+      "comment_url": "https://github.com/openclaw/openclaw/pull/161730#issuecomment-5906623523",
+      "repo": "openclaw/openclaw",
+      "issue_number": 161730,
+      "author": "clawsweeper[bot]",
+      "author_association": "CONTRIBUTOR",
+      "comment_created_at": "2026-09-30T07:46:41Z",
+      "comment_updated_at": "2026-09-30T07:46:41Z",
+      "trigger": "trusted_bot",
+      "command": "clawsweeper auto repair",
+      "intent": "clawsweeper_auto_repair",
+      "autoclose_message": null,
+      "trusted_bot": true,
+      "trusted_bot_author": "clawsweeper[bot]",
+      "automation_source": "clawsweeper",
+      "repair_reason": "structured ClawSweeper verdict: needs-human (sha=ea65b6957cc9462ab1075c3a90049c927e74509d)",
+      "expected_head_sha": "ea65b6957cc9462ab1075c3a90049c927e74509d",
+      "finding_id": null,
+      "status": "skipped",
+      "actions": [],
+      "target": {
+        "kind": "pull_request",
+        "title": "refactor(ui): remove unused display fields and formatter options",
+        "branch": "deslop/l212-ui-dead-fields",
+        "head_sha": "ea65b6957cc9462ab1075c3a90049c927e74509d",
+        "author": "steipete",
+        "labels": [
+          "app: web-ui",
+          "size: XS",
+          "P3",
+          "rating: 🐚 platinum hermit",
+          "status: 👀 ready for maintainer look"
+        ],
+        "is_clownfish_pr": false,
+        "cluster_id": null,
+        "job_path": null,
+        "automerge_cluster_id": "automerge-openclaw-openclaw-161730",
+        "automerge_job_path": "jobs/openclaw/inbox/automerge-openclaw-openclaw-161730.md",
+        "mode": "autonomous",
+        "merge_state_status": "BLOCKED",
+        "review_decision": "",
+        "checks": {
+          "total": 101,
+          "counts": {
+            "SKIPPED": 42,
+            "SUCCESS": 32,
+            "IN_PROGRESS": 26,
+            "PENDING": 1
+          },
+          "blockers": [
+            "checks-ui (1/3):IN_PROGRESS",
+            "checks-ui-e2e (1/9):IN_PROGRESS",
+            "checks-ui-e2e (2/9):IN_PROGRESS",
+            "checks-ui-e2e (3/9):IN_PROGRESS",
+            "checks-ui-e2e (4/9):IN_PROGRESS",
+            "checks-ui-e2e (5/9):IN_PROGRESS",
+            "checks-ui-e2e (6/9):IN_PROGRESS",
+            "checks-ui-e2e (7/9):IN_PROGRESS",
+            "checks-ui-e2e (8/9):IN_PROGRESS",
+            "checks-ui-e2e-real-gateway (1/2):IN_PROGRESS",
+            "checks-ui-e2e-real-gateway (2/2):IN_PROGRESS",
+            "pr-fail-fast:IN_PROGRESS",
+            "check-guards:IN_PROGRESS",
+            "check-prod-types:IN_PROGRESS",
+            "check-lint:IN_PROGRESS",
+            "check-dependencies:IN_PROGRESS",
+            "check-lint-core-1:IN_PROGRESS",
+            "check-lint-core-2:IN_PROGRESS",
+            "check-lint-extensions-1:IN_PROGRESS",
+            "check-lint-extensions-2:IN_PROGRESS",
+            "check-lint-extensions-3:IN_PROGRESS",
+            "check-test-types-core-1:IN_PROGRESS",
+            "check-test-types-core-2:IN_PROGRESS",
+            "check-test-types-core-3:IN_PROGRESS",
+            "check-test-types-core-4:IN_PROGRESS",
+            "check-test-types-core-5:IN_PROGRESS",
+            "openclaw/ci-gate:PENDING"
+          ]
+        }
+      },
+      "reason": "repair commands require a Clownfish PR or a PR opted into Clownfish automerge"
+    },
+    {
+      "idempotency_key": "clawsweeper-repair:openclaw/openclaw:161728:5906617941:2026-09-30T07:46:21Z:clawsweeper_auto_repair",
+      "comment_id": "5906617941",
+      "comment_node_id": "IC_kwDOQb6kR88AAAABYA_WVQ",
+      "comment_version_key": "5906617941:2026-09-30T07:46:21Z",
+      "comment_url": "https://github.com/openclaw/openclaw/issues/161728#issuecomment-5906617941",
+      "repo": "openclaw/openclaw",
+      "issue_number": 161728,
+      "author": "clawsweeper[bot]",
+      "author_association": "CONTRIBUTOR",
+      "comment_created_at": "2026-09-30T07:46:21Z",
+      "comment_updated_at": "2026-09-30T07:46:21Z",
+      "trigger": "trusted_bot",
+      "command": "clawsweeper auto repair",
+      "intent": "clawsweeper_auto_repair",
+      "autoclose_message": null,
+      "trusted_bot": true,
+      "trusted_bot_author": "clawsweeper[bot]",
+      "automation_source": "clawsweeper",
+      "repair_reason": "ClawSweeper review comment asks to keep repairing this PR",
+      "expected_head_sha": null,
+      "finding_id": null,
+      "status": "skipped",
+      "actions": [],
+      "target": {
+        "kind": "issue",
+        "state": "open",
+        "title": "Codex legacy native-task migration remains pending after connection identity changes",
+        "labels": [
+          "P2",
+          "clawsweeper:no-new-fix-pr",
+          "clawsweeper:needs-maintainer-review",
+          "clawsweeper:needs-product-decision",
+          "clawsweeper:needs-security-review",
+          "impact:session-state",
+          "issue-rating: 🌊 off-meta tidepool",
+          "impact:ux-friction"
+        ]
+      },
+      "reason": "repair commands require a pull request"
+    },
+    {
+      "idempotency_key": "clawsweeper-repair:openclaw/openclaw:161729:5906610964:2026-09-30T07:45:55Z:clawsweeper_auto_repair",
+      "comment_id": "5906610964",
+      "comment_node_id": "IC_kwDOQb6kR88AAAABYA-7FA",
+      "comment_version_key": "5906610964:2026-09-30T07:45:55Z",
+      "comment_url": "https://github.com/openclaw/openclaw/issues/161729#issuecomment-5906610964",
+      "repo": "openclaw/openclaw",
+      "issue_number": 161729,
+      "author": "clawsweeper[bot]",
+      "author_association": "CONTRIBUTOR",
+      "comment_created_at": "2026-09-30T07:45:55Z",
+      "comment_updated_at": "2026-09-30T07:45:55Z",
+      "trigger": "trusted_bot",
+      "command": "clawsweeper auto repair",
+      "intent": "clawsweeper_auto_repair",
+      "autoclose_message": null,
+      "trusted_bot": true,
+      "trusted_bot_author": "clawsweeper[bot]",
+      "automation_source": "clawsweeper",
+      "repair_reason": "ClawSweeper review comment asks to keep repairing this PR",
+      "expected_head_sha": null,
+      "finding_id": null,
+      "status": "skipped",
+      "actions": [],
+      "target": {
+        "kind": "issue",
+        "state": "open",
+        "title": "[Bug]: openai realtime transcription tests open a real api.openai.com socket and fail after #161352",
+        "labels": [
+          "no-stale",
+          "P2",
+          "clawsweeper:fix-shape-clear",
+          "clawsweeper:queueable-fix",
+          "clawsweeper:source-repro",
+          "issue-rating: 🦞 diamond lobster",
+          "impact:other"
+        ]
+      },
+      "reason": "repair commands require a pull request"
+    },
+    {
+      "idempotency_key": "clawsweeper-repair:openclaw/openclaw:161722:5906516183:2026-09-30T07:39:39Z:clawsweeper_auto_repair",
+      "comment_id": "5906516183",
+      "comment_node_id": "IC_kwDOQb6kR88AAAABYA5I1w",
+      "comment_version_key": "5906516183:2026-09-30T07:39:39Z",
+      "comment_url": "https://github.com/openclaw/openclaw/pull/161722#issuecomment-5906516183",
+      "repo": "openclaw/openclaw",
+      "issue_number": 161722,
+      "author": "clawsweeper[bot]",
+      "author_association": "CONTRIBUTOR",
+      "comment_created_at": "2026-09-30T07:39:39Z",
+      "comment_updated_at": "2026-09-30T07:39:39Z",
+      "trigger": "trusted_bot",
+      "command": "clawsweeper auto repair",
+      "intent": "clawsweeper_auto_repair",
+      "autoclose_message": null,
+      "trusted_bot": true,
+      "trusted_bot_author": "clawsweeper[bot]",
+      "automation_source": "clawsweeper",
+      "repair_reason": "structured ClawSweeper verdict: needs-human (sha=4a64854a07e0690bc8f5ecaaea542ae4a80acb10)",
+      "expected_head_sha": "4a64854a07e0690bc8f5ecaaea542ae4a80acb10",
+      "finding_id": null,
+      "status": "skipped",
+      "actions": [],
+      "target": {
+        "kind": "pull_request",
+        "title": "fix(codex): AGENTS.md edits never reach long-lived inherited-workspace sessions",
+        "branch": "fix/codex-workspace-instructions-refresh",
+        "head_sha": "4a64854a07e0690bc8f5ecaaea542ae4a80acb10",
+        "author": "oldrich333",
+        "labels": [
+          "docs",
+          "size: S",
+          "extensions: codex",
+          "P1",
+          "rating: 🦪 silver shellfish",
+          "merge-risk: 🚨 compatibility",
+          "merge-risk: 🚨 session-state",
+          "status: 📣 needs proof"
+        ],
+        "is_clownfish_pr": false,
+        "cluster_id": null,
+        "job_path": null,
+        "automerge_cluster_id": "automerge-openclaw-openclaw-161722",
+        "automerge_job_path": "jobs/openclaw/inbox/automerge-openclaw-openclaw-161722.md",
+        "mode": "autonomous",
+        "merge_state_status": "CLEAN",
+        "review_decision": "",
+        "checks": {
+          "total": 126,
+          "counts": {
+            "CANCELLED": 1,
+            "SKIPPED": 63,
+            "SUCCESS": 62
+          },
+          "blockers": [
+            "auto-response:CANCELLED"
+          ]
+        }
+      },
+      "reason": "repair commands require a Clownfish PR or a PR opted into Clownfish automerge"
+    },
+    {
+      "idempotency_key": "clawsweeper-repair:openclaw/openclaw:161720:5906487278:2026-09-30T07:43:20Z:clawsweeper_auto_repair",
+      "comment_id": "5906487278",
+      "comment_node_id": "IC_kwDOQb6kR88AAAABYA3X7g",
+      "comment_version_key": "5906487278:2026-09-30T07:43:20Z",
+      "comment_url": "https://github.com/openclaw/openclaw/issues/161720#issuecomment-5906487278",
+      "repo": "openclaw/openclaw",
+      "issue_number": 161720,
+      "author": "clawsweeper[bot]",
+      "author_association": "CONTRIBUTOR",
+      "comment_created_at": "2026-09-30T07:37:41Z",
+      "comment_updated_at": "2026-09-30T07:43:20Z",
+      "trigger": "trusted_bot",
+      "command": "clawsweeper auto repair",
+      "intent": "clawsweeper_auto_repair",
+      "autoclose_message": null,
+      "trusted_bot": true,
+      "trusted_bot_author": "clawsweeper[bot]",
+      "automation_source": "clawsweeper",
+      "repair_reason": "ClawSweeper review comment asks to keep repairing this PR",
+      "expected_head_sha": null,
+      "finding_id": null,
+      "status": "skipped",
+      "actions": [],
+      "target": {
+        "kind": "issue",
+        "state": "open",
+        "title": "Codex runtime artifact check rejects the Codex app's standalone install (in-package symlink), so the setup chat never starts",
+        "labels": [
+          "P1",
+          "clawsweeper:no-new-fix-pr",
+          "clawsweeper:needs-security-review",
+          "clawsweeper:source-repro",
+          "impact:security",
+          "issue-rating: 🦞 diamond lobster",
+          "impact:ux-friction"
+        ]
+      },
+      "reason": "repair commands require a pull request"
+    },
+    {
+      "idempotency_key": "clawsweeper-repair:openclaw/openclaw:161721:5906470299:2026-09-30T07:36:33Z:clawsweeper_auto_repair",
+      "comment_id": "5906470299",
+      "comment_node_id": "IC_kwDOQb6kR88AAAABYA2Vmw",
+      "comment_version_key": "5906470299:2026-09-30T07:36:33Z",
+      "comment_url": "https://github.com/openclaw/openclaw/issues/161721#issuecomment-5906470299",
+      "repo": "openclaw/openclaw",
+      "issue_number": 161721,
+      "author": "clawsweeper[bot]",
+      "author_association": "CONTRIBUTOR",
+      "comment_created_at": "2026-09-30T07:36:33Z",
+      "comment_updated_at": "2026-09-30T07:36:33Z",
+      "trigger": "trusted_bot",
+      "command": "clawsweeper auto repair",
+      "intent": "clawsweeper_auto_repair",
+      "autoclose_message": null,
+      "trusted_bot": true,
+      "trusted_bot_author": "clawsweeper[bot]",
+      "automation_source": "clawsweeper",
+      "repair_reason": "ClawSweeper review comment asks to keep repairing this PR",
+      "expected_head_sha": null,
+      "finding_id": null,
+      "status": "skipped",
+      "actions": [],
+      "target": {
+        "kind": "issue",
+        "state": "open",
+        "title": "Update failure: reconcile:abandoned (2026.9.7)",
+        "labels": [
+          "P2",
+          "issue-rating: 🦪 silver shellfish",
+          "maturity:stable",
+          "impact:ux-friction"
+        ]
+      },
+      "reason": "repair commands require a pull request"
+    },
+    {
+      "idempotency_key": "clawsweeper-repair:openclaw/openclaw:161718:5906349369:2026-09-30T07:37:58Z:clawsweeper_auto_repair",
       "comment_id": "5906349369",
       "comment_node_id": "IC_kwDOQb6kR88AAAABYAu9OQ",
-      "comment_version_key": "5906349369:2026-09-30T07:28:26Z",
+      "comment_version_key": "5906349369:2026-09-30T07:37:58Z",
       "comment_url": "https://github.com/openclaw/openclaw/pull/161718#issuecomment-5906349369",
       "repo": "openclaw/openclaw",
       "issue_number": 161718,
       "author": "clawsweeper[bot]",
       "author_association": "CONTRIBUTOR",
       "comment_created_at": "2026-09-30T07:28:26Z",
-      "comment_updated_at": "2026-09-30T07:28:26Z",
+      "comment_updated_at": "2026-09-30T07:37:58Z",
       "trigger": "trusted_bot",
       "command": "clawsweeper auto repair",
       "intent": "clawsweeper_auto_repair",
@@ -74,7 +537,7 @@
         "automerge_cluster_id": "automerge-openclaw-openclaw-161718",
         "automerge_job_path": "jobs/openclaw/inbox/automerge-openclaw-openclaw-161718.md",
         "mode": "autonomous",
-        "merge_state_status": "UNKNOWN",
+        "merge_state_status": "CLEAN",
         "review_decision": "",
         "checks": {
           "total": 103,
@@ -115,43 +578,7 @@
       "finding_id": null,
       "status": "skipped",
       "actions": [],
-      "target": {
-        "kind": "pull_request",
-        "title": "improve(tests): speed up delivery recovery fault checks",
-        "branch": "codex/perf-delivery-recovery-spies-e2f73b",
-        "head_sha": "77c21d17fd89cd17ed9be3407c910c3db25e3c07",
-        "author": "steipete",
-        "labels": [
-          "size: S",
-          "proof: sufficient",
-          "P3",
-          "rating: 🐚 platinum hermit",
-          "status: 👀 ready for maintainer look"
-        ],
-        "is_clownfish_pr": false,
-        "cluster_id": null,
-        "job_path": null,
-        "automerge_cluster_id": "automerge-openclaw-openclaw-161716",
-        "automerge_job_path": "jobs/openclaw/inbox/automerge-openclaw-openclaw-161716.md",
-        "mode": "autonomous",
-        "merge_state_status": "UNKNOWN",
-        "review_decision": "",
-        "checks": {
-          "total": 167,
-          "counts": {
-            "SKIPPED": 118,
-            "SUCCESS": 46,
-            "IN_PROGRESS": 1,
-            "PENDING": 1,
-            "NEUTRAL": 1
-          },
-          "blockers": [
-            "check-dependencies:IN_PROGRESS",
-            "openclaw/ci-gate:PENDING"
-          ]
-        }
-      },
-      "reason": "repair commands require a Clownfish PR or a PR opted into Clownfish automerge"
+      "reason": "comment version already processed in ledger"
     },
     {
       "idempotency_key": "clawsweeper-repair:openclaw/openclaw:161715:5906223665:2026-09-30T07:20:02Z:clawsweeper_auto_repair",
@@ -177,53 +604,20 @@
       "finding_id": null,
       "status": "skipped",
       "actions": [],
-      "target": {
-        "kind": "pull_request",
-        "title": "refactor(plugins): simplify browser and memory leaf helpers",
-        "branch": "deslop/l205-browser-memory-leaves",
-        "head_sha": "5782a0b91a15fc617058d938d7803dcc486d12bf",
-        "author": "steipete",
-        "labels": [
-          "extensions: memory-core",
-          "size: S",
-          "extensions: browser"
-        ],
-        "is_clownfish_pr": false,
-        "cluster_id": null,
-        "job_path": null,
-        "automerge_cluster_id": "automerge-openclaw-openclaw-161715",
-        "automerge_job_path": "jobs/openclaw/inbox/automerge-openclaw-openclaw-161715.md",
-        "mode": "autonomous",
-        "merge_state_status": "UNKNOWN",
-        "review_decision": "",
-        "checks": {
-          "total": 118,
-          "counts": {
-            "CANCELLED": 2,
-            "SKIPPED": 51,
-            "SUCCESS": 64,
-            "NEUTRAL": 1
-          },
-          "blockers": [
-            "auto-response:CANCELLED",
-            "auto-response:CANCELLED"
-          ]
-        }
-      },
-      "reason": "repair commands require a Clownfish PR or a PR opted into Clownfish automerge"
+      "reason": "comment version already processed in ledger"
     },
     {
-      "idempotency_key": "clawsweeper-repair:openclaw/openclaw:161714:5906184119:2026-09-30T07:17:18Z:clawsweeper_auto_repair",
+      "idempotency_key": "clawsweeper-repair:openclaw/openclaw:161714:5906184119:2026-09-30T07:39:36Z:clawsweeper_auto_repair",
       "comment_id": "5906184119",
       "comment_node_id": "IC_kwDOQb6kR88AAAABYAk3tw",
-      "comment_version_key": "5906184119:2026-09-30T07:17:18Z",
+      "comment_version_key": "5906184119:2026-09-30T07:39:36Z",
       "comment_url": "https://github.com/openclaw/openclaw/pull/161714#issuecomment-5906184119",
       "repo": "openclaw/openclaw",
       "issue_number": 161714,
       "author": "clawsweeper[bot]",
       "author_association": "CONTRIBUTOR",
       "comment_created_at": "2026-09-30T07:17:18Z",
-      "comment_updated_at": "2026-09-30T07:17:18Z",
+      "comment_updated_at": "2026-09-30T07:39:36Z",
       "trigger": "trusted_bot",
       "command": "clawsweeper auto repair",
       "intent": "clawsweeper_auto_repair",
@@ -251,7 +645,8 @@
           "size: XL",
           "P3",
           "rating: 🦐 gold shrimp",
-          "status: 👀 ready for maintainer look"
+          "merge-risk: 🚨 automation",
+          "status: ⏳ waiting on author"
         ],
         "is_clownfish_pr": false,
         "cluster_id": null,
@@ -259,14 +654,14 @@
         "automerge_cluster_id": "automerge-openclaw-openclaw-161714",
         "automerge_job_path": "jobs/openclaw/inbox/automerge-openclaw-openclaw-161714.md",
         "mode": "autonomous",
-        "merge_state_status": "UNKNOWN",
+        "merge_state_status": "DIRTY",
         "review_decision": "",
         "checks": {
-          "total": 30,
+          "total": 48,
           "counts": {
             "CANCELLED": 4,
-            "SKIPPED": 15,
-            "SUCCESS": 10,
+            "SKIPPED": 25,
+            "SUCCESS": 18,
             "PENDING": 1
           },
           "blockers": [
@@ -304,39 +699,7 @@
       "finding_id": null,
       "status": "skipped",
       "actions": [],
-      "target": {
-        "kind": "pull_request",
-        "title": "refactor: delete unreferenced production code (second pass)",
-        "branch": "deslop/l212-dead-exports2",
-        "head_sha": "e21044b7b51379971e945745caa72acfd450e6d5",
-        "author": "steipete",
-        "labels": [
-          "app: web-ui",
-          "size: S",
-          "extensions: groq"
-        ],
-        "is_clownfish_pr": false,
-        "cluster_id": null,
-        "job_path": null,
-        "automerge_cluster_id": "automerge-openclaw-openclaw-161712",
-        "automerge_job_path": "jobs/openclaw/inbox/automerge-openclaw-openclaw-161712.md",
-        "mode": "autonomous",
-        "merge_state_status": "UNKNOWN",
-        "review_decision": "",
-        "checks": {
-          "total": 248,
-          "counts": {
-            "CANCELLED": 1,
-            "SKIPPED": 59,
-            "SUCCESS": 187,
-            "NEUTRAL": 1
-          },
-          "blockers": [
-            "auto-response:CANCELLED"
-          ]
-        }
-      },
-      "reason": "repair commands require an open issue or PR"
+      "reason": "comment version already processed in ledger"
     },
     {
       "idempotency_key": "clawsweeper-repair:openclaw/openclaw:161707:5906112650:2026-09-30T07:12:33Z:clawsweeper_auto_repair",
@@ -362,22 +725,7 @@
       "finding_id": null,
       "status": "skipped",
       "actions": [],
-      "target": {
-        "kind": "issue",
-        "state": "open",
-        "title": "[Bug]: Codex: first-turn AGENTS.md snapshot reused by every new native thread of the session; edits never reach it, systemPromptReport shows the current file",
-        "labels": [
-          "P2",
-          "clawsweeper:no-new-fix-pr",
-          "clawsweeper:needs-maintainer-review",
-          "clawsweeper:needs-product-decision",
-          "clawsweeper:source-repro",
-          "impact:session-state",
-          "issue-rating: 🦞 diamond lobster",
-          "clawsweeper:bulk-filed"
-        ]
-      },
-      "reason": "repair commands require a pull request"
+      "reason": "comment version already processed in ledger"
     },
     {
       "idempotency_key": "clawsweeper-repair:openclaw/openclaw:161713:5906107348:2026-09-30T07:26:31Z:clawsweeper_auto_repair",
@@ -403,46 +751,7 @@
       "finding_id": null,
       "status": "skipped",
       "actions": [],
-      "target": {
-        "kind": "pull_request",
-        "title": "fix(release): ClawHub publication ignores Retry-After and strands staged plugins after one failure",
-        "branch": "release/clawhub-retry-after",
-        "head_sha": "c739bfd4ee82f536219ddffdd9ab2c47b5986364",
-        "author": "steipete",
-        "labels": [
-          "scripts",
-          "size: L",
-          "P2",
-          "rating: 🦐 gold shrimp",
-          "merge-risk: 🚨 automation",
-          "status: 👀 ready for maintainer look",
-          "release-fast-lane"
-        ],
-        "is_clownfish_pr": false,
-        "cluster_id": null,
-        "job_path": null,
-        "automerge_cluster_id": "automerge-openclaw-openclaw-161713",
-        "automerge_job_path": "jobs/openclaw/inbox/automerge-openclaw-openclaw-161713.md",
-        "mode": "autonomous",
-        "merge_state_status": "DIRTY",
-        "review_decision": "",
-        "checks": {
-          "total": 27,
-          "counts": {
-            "CANCELLED": 3,
-            "SKIPPED": 13,
-            "SUCCESS": 10,
-            "PENDING": 1
-          },
-          "blockers": [
-            "auto-response:CANCELLED",
-            "dispatch:CANCELLED",
-            "PR context and evidence:CANCELLED",
-            "openclaw/ci-gate:PENDING"
-          ]
-        }
-      },
-      "reason": "repair commands require a Clownfish PR or a PR opted into Clownfish automerge"
+      "reason": "comment version already processed in ledger"
     },
     {
       "idempotency_key": "clawsweeper-repair:openclaw/openclaw:161709:5906063154:2026-09-30T07:09:06Z:clawsweeper_auto_repair",
@@ -468,56 +777,7 @@
       "finding_id": null,
       "status": "skipped",
       "actions": [],
-      "target": {
-        "kind": "pull_request",
-        "title": "feat(macos): host the Gateway on bundled Bun",
-        "branch": "steipete/mac-app-hosted-gateway",
-        "head_sha": "0f2557e6bc2ca859725c5409947b461627ab22c3",
-        "author": "steipete",
-        "labels": [
-          "docs",
-          "app: macos",
-          "gateway",
-          "cli",
-          "scripts",
-          "commands",
-          "size: XL",
-          "extensions: qa-lab",
-          "extensions: codex",
-          "proof: sufficient",
-          "P2",
-          "rating: 🦐 gold shrimp",
-          "merge-risk: 🚨 compatibility",
-          "status: ⏳ waiting on author"
-        ],
-        "is_clownfish_pr": false,
-        "cluster_id": null,
-        "job_path": null,
-        "automerge_cluster_id": "automerge-openclaw-openclaw-161709",
-        "automerge_job_path": "jobs/openclaw/inbox/automerge-openclaw-openclaw-161709.md",
-        "mode": "autonomous",
-        "merge_state_status": "UNKNOWN",
-        "review_decision": "",
-        "checks": {
-          "total": 37,
-          "counts": {
-            "CANCELLED": 8,
-            "SKIPPED": 23,
-            "SUCCESS": 6
-          },
-          "blockers": [
-            "auto-response:CANCELLED",
-            "auto-response:CANCELLED",
-            "auto-response:CANCELLED",
-            "auto-response:CANCELLED",
-            "auto-response:CANCELLED",
-            "auto-response:CANCELLED",
-            "auto-response:CANCELLED",
-            "auto-response:CANCELLED"
-          ]
-        }
-      },
-      "reason": "repair commands require a Clownfish PR or a PR opted into Clownfish automerge"
+      "reason": "comment version already processed in ledger"
     },
     {
       "idempotency_key": "clawsweeper-repair:openclaw/openclaw:161711:5906043715:2026-09-30T07:07:48Z:clawsweeper_auto_repair",
@@ -543,34 +803,7 @@
       "finding_id": null,
       "status": "skipped",
       "actions": [],
-      "target": {
-        "kind": "pull_request",
-        "title": "refactor(ui): simplify about timer cleanup",
-        "branch": "deslop/l192-about-timers",
-        "head_sha": "8b60bb5b6219a23fb04214f89c1dcd5506acf6a2",
-        "author": "steipete",
-        "labels": [
-          "app: web-ui",
-          "size: XS"
-        ],
-        "is_clownfish_pr": false,
-        "cluster_id": null,
-        "job_path": null,
-        "automerge_cluster_id": "automerge-openclaw-openclaw-161711",
-        "automerge_job_path": "jobs/openclaw/inbox/automerge-openclaw-openclaw-161711.md",
-        "mode": "autonomous",
-        "merge_state_status": "UNKNOWN",
-        "review_decision": "",
-        "checks": {
-          "total": 90,
-          "counts": {
-            "SKIPPED": 33,
-            "SUCCESS": 57
-          },
-          "blockers": []
-        }
-      },
-      "reason": "repair commands require an open issue or PR"
+      "reason": "comment version already processed in ledger"
     },
     {
       "idempotency_key": "clawsweeper-repair:openclaw/openclaw:161710:5906025955:2026-09-30T07:06:37Z:clawsweeper_auto_repair",
@@ -596,52 +829,20 @@
       "finding_id": null,
       "status": "skipped",
       "actions": [],
-      "target": {
-        "kind": "pull_request",
-        "title": "refactor(agents): remove redundant runtime projections",
-        "branch": "deslop/l206-model-runtime-projections",
-        "head_sha": "ed451dbc5a1e9a5d6d4942a36caa46670e8bd821",
-        "author": "steipete",
-        "labels": [
-          "agents",
-          "size: M",
-          "security-sensitive-changed"
-        ],
-        "is_clownfish_pr": false,
-        "cluster_id": null,
-        "job_path": null,
-        "automerge_cluster_id": "automerge-openclaw-openclaw-161710",
-        "automerge_job_path": "jobs/openclaw/inbox/automerge-openclaw-openclaw-161710.md",
-        "mode": "autonomous",
-        "merge_state_status": "UNKNOWN",
-        "review_decision": "",
-        "checks": {
-          "total": 253,
-          "counts": {
-            "FAILURE": 1,
-            "SKIPPED": 53,
-            "SUCCESS": 198,
-            "NEUTRAL": 1
-          },
-          "blockers": [
-            "PR context and evidence:FAILURE"
-          ]
-        }
-      },
-      "reason": "repair commands require an open issue or PR"
+      "reason": "comment version already processed in ledger"
     },
     {
-      "idempotency_key": "clawsweeper-repair:openclaw/openclaw:161706:5905999796:2026-09-30T07:04:56Z:clawsweeper_auto_repair",
+      "idempotency_key": "clawsweeper-repair:openclaw/openclaw:161706:5905999796:2026-09-30T07:39:57Z:clawsweeper_auto_repair",
       "comment_id": "5905999796",
       "comment_node_id": "IC_kwDOQb6kR88AAAABYAZntA",
-      "comment_version_key": "5905999796:2026-09-30T07:04:56Z",
+      "comment_version_key": "5905999796:2026-09-30T07:39:57Z",
       "comment_url": "https://github.com/openclaw/openclaw/pull/161706#issuecomment-5905999796",
       "repo": "openclaw/openclaw",
       "issue_number": 161706,
       "author": "clawsweeper[bot]",
       "author_association": "CONTRIBUTOR",
       "comment_created_at": "2026-09-30T07:04:56Z",
-      "comment_updated_at": "2026-09-30T07:04:56Z",
+      "comment_updated_at": "2026-09-30T07:39:57Z",
       "trigger": "trusted_bot",
       "command": "clawsweeper auto repair",
       "intent": "clawsweeper_auto_repair",
@@ -649,8 +850,8 @@
       "trusted_bot": true,
       "trusted_bot_author": "clawsweeper[bot]",
       "automation_source": "clawsweeper",
-      "repair_reason": "structured ClawSweeper verdict: needs-human (sha=108cdfb54dcb51bb1b5b70526305a0d491410ca5)",
-      "expected_head_sha": "108cdfb54dcb51bb1b5b70526305a0d491410ca5",
+      "repair_reason": "structured ClawSweeper verdict: needs-human (sha=72a0302a6823404c32ac0379c1a3ada3e7d4e663)",
+      "expected_head_sha": "72a0302a6823404c32ac0379c1a3ada3e7d4e663",
       "finding_id": null,
       "status": "skipped",
       "actions": [],
@@ -677,33 +878,18 @@
         "automerge_cluster_id": "automerge-openclaw-openclaw-161706",
         "automerge_job_path": "jobs/openclaw/inbox/automerge-openclaw-openclaw-161706.md",
         "mode": "autonomous",
-        "merge_state_status": "BLOCKED",
+        "merge_state_status": "UNKNOWN",
         "review_decision": "",
         "checks": {
-          "total": 31,
+          "total": 114,
           "counts": {
-            "IN_PROGRESS": 11,
-            "SUCCESS": 1,
-            "SKIPPED": 18,
-            "PENDING": 1
+            "SKIPPED": 55,
+            "SUCCESS": 59
           },
-          "blockers": [
-            "auto-response:IN_PROGRESS",
-            "preflight:IN_PROGRESS",
-            "dispatch:IN_PROGRESS",
-            "label:IN_PROGRESS",
-            "Scan changed paths (precise):IN_PROGRESS",
-            "PR context and evidence:IN_PROGRESS",
-            "resolve:IN_PROGRESS",
-            "Detect shared OpenClawKit scan scope:IN_PROGRESS",
-            "actionlint:IN_PROGRESS",
-            "Detect iOS scan scope:IN_PROGRESS",
-            "Detect macOS scan scope:IN_PROGRESS",
-            "openclaw/ci-gate:PENDING"
-          ]
+          "blockers": []
         }
       },
-      "reason": "repair commands require a Clownfish PR or a PR opted into Clownfish automerge"
+      "reason": "repair commands require an open issue or PR"
     },
     {
       "idempotency_key": "clawsweeper-repair:openclaw/openclaw:161704:5905994147:2026-09-30T07:04:34Z:clawsweeper_auto_repair",
@@ -729,43 +915,7 @@
       "finding_id": null,
       "status": "skipped",
       "actions": [],
-      "target": {
-        "kind": "pull_request",
-        "title": "test: stabilize flaky fixtures (batch f109)",
-        "branch": "tcr/land-f109-1790748278",
-        "head_sha": "64f0990a5fb29376230b02027ca47b724a9fde55",
-        "author": "steipete",
-        "labels": [
-          "channel: discord",
-          "agents",
-          "size: S",
-          "P3",
-          "rating: 🦐 gold shrimp",
-          "status: 👀 ready for maintainer look"
-        ],
-        "is_clownfish_pr": false,
-        "cluster_id": null,
-        "job_path": null,
-        "automerge_cluster_id": "automerge-openclaw-openclaw-161704",
-        "automerge_job_path": "jobs/openclaw/inbox/automerge-openclaw-openclaw-161704.md",
-        "mode": "autonomous",
-        "merge_state_status": "UNKNOWN",
-        "review_decision": "",
-        "checks": {
-          "total": 113,
-          "counts": {
-            "CANCELLED": 2,
-            "SKIPPED": 59,
-            "SUCCESS": 51,
-            "NEUTRAL": 1
-          },
-          "blockers": [
-            "auto-response:CANCELLED",
-            "auto-response:CANCELLED"
-          ]
-        }
-      },
-      "reason": "repair commands require an open issue or PR"
+      "reason": "comment version already processed in ledger"
     },
     {
       "idempotency_key": "clawsweeper-repair:openclaw/openclaw:161702:5905993806:2026-09-30T07:04:32Z:clawsweeper_auto_repair",
@@ -791,48 +941,7 @@
       "finding_id": null,
       "status": "skipped",
       "actions": [],
-      "target": {
-        "kind": "pull_request",
-        "title": "fix(ios): skip release qualification for TestFlight",
-        "branch": "fix/testflight-skip-qualification",
-        "head_sha": "becf92c06ae2b6f1945f2903db7e53f26abe57e7",
-        "author": "joshavant",
-        "labels": [
-          "app: ios",
-          "size: S",
-          "P2",
-          "rating: 🦐 gold shrimp",
-          "merge-risk: 🚨 automation",
-          "status: 👀 ready for maintainer look"
-        ],
-        "is_clownfish_pr": false,
-        "cluster_id": null,
-        "job_path": null,
-        "automerge_cluster_id": "automerge-openclaw-openclaw-161702",
-        "automerge_job_path": "jobs/openclaw/inbox/automerge-openclaw-openclaw-161702.md",
-        "mode": "autonomous",
-        "merge_state_status": "UNKNOWN",
-        "review_decision": "",
-        "checks": {
-          "total": 207,
-          "counts": {
-            "CANCELLED": 7,
-            "SKIPPED": 86,
-            "SUCCESS": 113,
-            "NEUTRAL": 1
-          },
-          "blockers": [
-            "Security High (core-auth-secrets):CANCELLED",
-            "Security High (channel-runtime-boundary):CANCELLED",
-            "Security High (network-ssrf-boundary):CANCELLED",
-            "Security High (mcp-process-tool-boundary):CANCELLED",
-            "Security High (process-exec-boundary):CANCELLED",
-            "Security High (plugin-trust-boundary):CANCELLED",
-            "Security High (actions):CANCELLED"
-          ]
-        }
-      },
-      "reason": "repair commands require a Clownfish PR or a PR opted into Clownfish automerge"
+      "reason": "comment version already processed in ledger"
     },
     {
       "idempotency_key": "clawsweeper-repair:openclaw/openclaw:161705:5905988278:2026-09-30T07:04:11Z:clawsweeper_auto_repair",
@@ -858,17 +967,7 @@
       "finding_id": null,
       "status": "skipped",
       "actions": [],
-      "target": {
-        "kind": "issue",
-        "state": "closed",
-        "title": "Update failure: plugin-target-unavailable (2026.9.3)",
-        "labels": [
-          "P0",
-          "maturity:stable",
-          "impact:ux-release-blocker"
-        ]
-      },
-      "reason": "repair commands require an open issue or PR"
+      "reason": "comment version already processed in ledger"
     },
     {
       "idempotency_key": "clawsweeper-repair:openclaw/openclaw:161695:5905917909:2026-09-30T06:59:37Z:clawsweeper_auto_repair",
@@ -894,47 +993,7 @@
       "finding_id": null,
       "status": "skipped",
       "actions": [],
-      "target": {
-        "kind": "pull_request",
-        "title": "fix(ui): avoid ignored Send clicks during chat recovery",
-        "branch": "fix/chat-stop-readiness",
-        "head_sha": "c74cb4f2101ee26509b881608f2fe3c08671740c",
-        "author": "steipete",
-        "labels": [
-          "docs",
-          "app: web-ui",
-          "size: M",
-          "proof: sufficient",
-          "P1",
-          "rating: 🦞 diamond lobster",
-          "status: 👀 ready for maintainer look",
-          "proof: 📸 screenshot"
-        ],
-        "is_clownfish_pr": false,
-        "cluster_id": null,
-        "job_path": null,
-        "automerge_cluster_id": "automerge-openclaw-openclaw-161695",
-        "automerge_job_path": "jobs/openclaw/inbox/automerge-openclaw-openclaw-161695.md",
-        "mode": "autonomous",
-        "merge_state_status": "UNKNOWN",
-        "review_decision": "",
-        "checks": {
-          "total": 167,
-          "counts": {
-            "CANCELLED": 5,
-            "SKIPPED": 97,
-            "SUCCESS": 65
-          },
-          "blockers": [
-            "auto-response:CANCELLED",
-            "auto-response:CANCELLED",
-            "dispatch:CANCELLED",
-            "PR context and evidence:CANCELLED",
-            "PR context and evidence:CANCELLED"
-          ]
-        }
-      },
-      "reason": "repair commands require a Clownfish PR or a PR opted into Clownfish automerge"
+      "reason": "comment version already processed in ledger"
     },
     {
       "idempotency_key": "clawsweeper-repair:openclaw/openclaw:161698:5905883683:2026-09-30T06:57:20Z:clawsweeper_auto_repair",
@@ -1038,38 +1097,7 @@
       "finding_id": null,
       "status": "skipped",
       "actions": [],
-      "target": {
-        "kind": "pull_request",
-        "title": "improve(tests): speed up live WAL snapshot checks",
-        "branch": "codex/test-state-live-wal-native-e2f7",
-        "head_sha": "33551ec880bcf7d77b4749dd977c26f2649a194c",
-        "author": "steipete",
-        "labels": [
-          "size: XS",
-          "proof: sufficient",
-          "P3",
-          "rating: 🦞 diamond lobster",
-          "status: 👀 ready for maintainer look"
-        ],
-        "is_clownfish_pr": false,
-        "cluster_id": null,
-        "job_path": null,
-        "automerge_cluster_id": "automerge-openclaw-openclaw-161693",
-        "automerge_job_path": "jobs/openclaw/inbox/automerge-openclaw-openclaw-161693.md",
-        "mode": "autonomous",
-        "merge_state_status": "UNKNOWN",
-        "review_decision": "",
-        "checks": {
-          "total": 178,
-          "counts": {
-            "SKIPPED": 127,
-            "SUCCESS": 50,
-            "NEUTRAL": 1
-          },
-          "blockers": []
-        }
-      },
-      "reason": "repair commands require a Clownfish PR or a PR opted into Clownfish automerge"
+      "reason": "comment version already processed in ledger"
     },
     {
       "idempotency_key": "clawsweeper-repair:openclaw/openclaw:161697:5905775967:2026-09-30T06:50:10Z:clawsweeper_auto_repair",
@@ -1147,117 +1175,7 @@
       "finding_id": null,
       "status": "skipped",
       "actions": [],
-      "target": {
-        "kind": "pull_request",
-        "title": "fix(doctor): Codex bwrap check misses loopback denials that break sandboxed shells",
-        "branch": "codex/doctor-codex-bwrap-loopback-probe-20260929",
-        "head_sha": "91b51586545493d92961990e5249e1244febeac7",
-        "author": "steipete",
-        "labels": [
-          "docs",
-          "gateway",
-          "commands",
-          "docker",
-          "size: L",
-          "extensions: codex",
-          "proof: sufficient",
-          "P1",
-          "rating: 🐚 platinum hermit",
-          "merge-risk: 🚨 compatibility",
-          "status: 👀 ready for maintainer look"
-        ],
-        "is_clownfish_pr": false,
-        "cluster_id": null,
-        "job_path": null,
-        "automerge_cluster_id": "automerge-openclaw-openclaw-161692",
-        "automerge_job_path": "jobs/openclaw/inbox/automerge-openclaw-openclaw-161692.md",
-        "mode": "autonomous",
-        "merge_state_status": "BLOCKED",
-        "review_decision": "",
-        "checks": {
-          "total": 242,
-          "counts": {
-            "CANCELLED": 67,
-            "SKIPPED": 56,
-            "SUCCESS": 115,
-            "FAILURE": 3,
-            "NEUTRAL": 1
-          },
-          "blockers": [
-            "dispatch:CANCELLED",
-            "dispatch:CANCELLED",
-            "PR context and evidence:CANCELLED",
-            "PR context and evidence:CANCELLED",
-            "build-artifacts:CANCELLED",
-            "checks-ui-e2e (1/9):CANCELLED",
-            "checks-ui-e2e (2/9):CANCELLED",
-            "checks-ui-e2e (3/9):CANCELLED",
-            "checks-ui-e2e (4/9):CANCELLED",
-            "checks-ui-e2e (5/9):CANCELLED",
-            "checks-ui-e2e (6/9):CANCELLED",
-            "checks-ui-e2e (7/9):CANCELLED",
-            "checks-ui-e2e (8/9):CANCELLED",
-            "checks-ui-e2e-real-gateway (1/2):CANCELLED",
-            "checks-ui-e2e-real-gateway (2/2):CANCELLED",
-            "checks-node-changed-compact-large-10-1:CANCELLED",
-            "checks-node-changed-compact-small-8-4:CANCELLED",
-            "checks-node-changed-compact-small-6-2:CANCELLED",
-            "checks-node-changed-compact-small-9-3:CANCELLED",
-            "checks-node-changed-compact-small-7-2:CANCELLED",
-            "checks-node-changed-compact-small-2-2:CANCELLED",
-            "checks-node-changed-compact-large-24:CANCELLED",
-            "checks-node-changed-compact-large-10-2:CANCELLED",
-            "checks-node-changed-compact-large-6:CANCELLED",
-            "checks-node-changed-compact-large-23-1:CANCELLED",
-            "checks-node-changed-compact-large-9-1:CANCELLED",
-            "checks-node-changed-compact-small-23-1:CANCELLED",
-            "checks-node-changed-compact-small-22:CANCELLED",
-            "checks-node-changed-compact-small-16:CANCELLED",
-            "checks-node-changed-extensions-bundle-2-1:CANCELLED",
-            "checks-node-changed-compact-large-14-1:CANCELLED",
-            "checks-node-changed-compact-small-21-1:CANCELLED",
-            "checks-node-changed-extensions-bundle-6:CANCELLED",
-            "checks-node-changed-extensions-bundle-16-1:CANCELLED",
-            "checks-node-changed-2:CANCELLED",
-            "checks-node-changed-compact-small-20-1:CANCELLED",
-            "checks-node-changed-extensions-bundle-12-1:CANCELLED",
-            "checks-node-changed-extensions-bundle-15-1:CANCELLED",
-            "checks-node-changed-1:CANCELLED",
-            "checks-node-changed-compact-small-19-1:CANCELLED",
-            "checks-node-changed-compact-small-44:CANCELLED",
-            "checks-node-changed-compact-large-7-2:CANCELLED",
-            "checks-node-changed-extensions-bundle-3:CANCELLED",
-            "checks-node-changed-compact-small-51:CANCELLED",
-            "checks-node-changed-compact-large-23-2:CANCELLED",
-            "checks-node-changed-compact-large-20-3:FAILURE",
-            "checks-node-changed-compact-large-3-2:CANCELLED",
-            "checks-node-changed-extensions-bundle-7:CANCELLED",
-            "checks-node-changed-extensions-bundle-17:CANCELLED",
-            "checks-node-changed-4:CANCELLED",
-            "checks-node-changed-extensions-bundle-10:CANCELLED",
-            "check-additional-extension-package-boundary:CANCELLED",
-            "check-additional-runtime-topology-architecture:CANCELLED",
-            "docker-seed-e2e:CANCELLED",
-            "check-guards:CANCELLED",
-            "check-prod-types:CANCELLED",
-            "check-dependencies:CANCELLED",
-            "check-test-types:CANCELLED",
-            "check-lint-core-1:CANCELLED",
-            "check-lint-core-2:CANCELLED",
-            "check-lint-extensions-1:CANCELLED",
-            "check-lint-extensions-2:CANCELLED",
-            "check-lint-extensions-3:CANCELLED",
-            "check-test-types-core-1:CANCELLED",
-            "check-test-types-core-2:CANCELLED",
-            "check-test-types-core-3:CANCELLED",
-            "check-test-types-core-4:CANCELLED",
-            "check-test-types-core-5:CANCELLED",
-            "openclaw/ci-gate:FAILURE",
-            "openclaw/ci-gate:FAILURE"
-          ]
-        }
-      },
-      "reason": "repair commands require a Clownfish PR or a PR opted into Clownfish automerge"
+      "reason": "comment version already processed in ledger"
     },
     {
       "idempotency_key": "clawsweeper-repair:openclaw/openclaw:161694:5905738993:2026-09-30T06:47:37Z:clawsweeper_auto_repair",
@@ -1364,17 +1282,17 @@
       "reason": "comment version already processed in ledger"
     },
     {
-      "idempotency_key": "clawsweeper-repair:openclaw/openclaw:161689:5905664538:2026-09-30T07:27:05Z:clawsweeper_auto_repair",
+      "idempotency_key": "clawsweeper-repair:openclaw/openclaw:161689:5905664538:2026-09-30T07:37:00Z:clawsweeper_auto_repair",
       "comment_id": "5905664538",
       "comment_node_id": "IC_kwDOQb6kR88AAAABYAFKGg",
-      "comment_version_key": "5905664538:2026-09-30T07:27:05Z",
+      "comment_version_key": "5905664538:2026-09-30T07:37:00Z",
       "comment_url": "https://github.com/openclaw/openclaw/pull/161689#issuecomment-5905664538",
       "repo": "openclaw/openclaw",
       "issue_number": 161689,
       "author": "clawsweeper[bot]",
       "author_association": "CONTRIBUTOR",
       "comment_created_at": "2026-09-30T06:42:19Z",
-      "comment_updated_at": "2026-09-30T07:27:05Z",
+      "comment_updated_at": "2026-09-30T07:37:00Z",
       "trigger": "trusted_bot",
       "command": "clawsweeper auto repair",
       "intent": "clawsweeper_auto_repair",
@@ -1408,22 +1326,20 @@
         "automerge_cluster_id": "automerge-openclaw-openclaw-161689",
         "automerge_job_path": "jobs/openclaw/inbox/automerge-openclaw-openclaw-161689.md",
         "mode": "autonomous",
-        "merge_state_status": "BLOCKED",
+        "merge_state_status": "UNKNOWN",
         "review_decision": "",
         "checks": {
-          "total": 125,
+          "total": 127,
           "counts": {
-            "SKIPPED": 54,
-            "SUCCESS": 67,
-            "IN_PROGRESS": 1,
-            "FAILURE": 1,
-            "PENDING": 1,
+            "SKIPPED": 55,
+            "SUCCESS": 68,
+            "FAILURE": 3,
             "NEUTRAL": 1
           },
           "blockers": [
-            "check-test-types-core-2:IN_PROGRESS",
             "check-test-types-core-4:FAILURE",
-            "openclaw/ci-gate:PENDING"
+            "openclaw/ci-gate:FAILURE",
+            "openclaw/ci-gate:FAILURE"
           ]
         }
       },
@@ -2077,52 +1993,7 @@
       "finding_id": null,
       "status": "skipped",
       "actions": [],
-      "target": {
-        "kind": "pull_request",
-        "title": "improve(ui): collapse inter-session receipts into activity rows",
-        "branch": "openclaw/visualizing-inter-session-communication",
-        "head_sha": "b431d3655c363333937e752840f357300b61ab17",
-        "author": "roboclaw-bot",
-        "labels": [
-          "docs",
-          "app: web-ui",
-          "size: L",
-          "proof: sufficient",
-          "P3",
-          "rating: 🦞 diamond lobster",
-          "status: 👀 ready for maintainer look",
-          "proof: 📸 screenshot"
-        ],
-        "is_clownfish_pr": false,
-        "cluster_id": null,
-        "job_path": null,
-        "automerge_cluster_id": "automerge-openclaw-openclaw-161656",
-        "automerge_job_path": "jobs/openclaw/inbox/automerge-openclaw-openclaw-161656.md",
-        "mode": "autonomous",
-        "merge_state_status": "BLOCKED",
-        "review_decision": "",
-        "checks": {
-          "total": 30,
-          "counts": {
-            "CANCELLED": 1,
-            "IN_PROGRESS": 6,
-            "SKIPPED": 13,
-            "SUCCESS": 9,
-            "PENDING": 1
-          },
-          "blockers": [
-            "PR context and evidence:CANCELLED",
-            "auto-response:IN_PROGRESS",
-            "preflight:IN_PROGRESS",
-            "PR context and evidence:IN_PROGRESS",
-            "actionlint:IN_PROGRESS",
-            "Detect iOS scan scope:IN_PROGRESS",
-            "Detect macOS scan scope:IN_PROGRESS",
-            "openclaw/ci-gate:PENDING"
-          ]
-        }
-      },
-      "reason": "repair commands require a Clownfish PR or a PR opted into Clownfish automerge"
+      "reason": "comment version already processed in ledger"
     },
     {
       "idempotency_key": "clawsweeper-repair:openclaw/openclaw:161660:5905023084:2026-09-30T05:53:09Z:clawsweeper_auto_repair",
@@ -2255,17 +2126,17 @@
       "reason": "comment version already processed in ledger"
     },
     {
-      "idempotency_key": "clawsweeper-repair:openclaw/openclaw:161648:5904932053:2026-09-30T07:18:14Z:clawsweeper_auto_repair",
+      "idempotency_key": "clawsweeper-repair:openclaw/openclaw:161648:5904932053:2026-09-30T07:41:35Z:clawsweeper_auto_repair",
       "comment_id": "5904932053",
       "comment_node_id": "IC_kwDOQb6kR88AAAABX_Yc1Q",
-      "comment_version_key": "5904932053:2026-09-30T07:18:14Z",
+      "comment_version_key": "5904932053:2026-09-30T07:41:35Z",
       "comment_url": "https://github.com/openclaw/openclaw/pull/161648#issuecomment-5904932053",
       "repo": "openclaw/openclaw",
       "issue_number": 161648,
       "author": "clawsweeper[bot]",
       "author_association": "CONTRIBUTOR",
       "comment_created_at": "2026-09-30T05:45:48Z",
-      "comment_updated_at": "2026-09-30T07:18:14Z",
+      "comment_updated_at": "2026-09-30T07:41:35Z",
       "trigger": "trusted_bot",
       "command": "clawsweeper auto repair",
       "intent": "clawsweeper_auto_repair",
@@ -2273,8 +2144,8 @@
       "trusted_bot": true,
       "trusted_bot_author": "clawsweeper[bot]",
       "automation_source": "clawsweeper",
-      "repair_reason": "structured ClawSweeper verdict: needs-human (sha=7798dc28941a88d9d078868c930372ae2771fada)",
-      "expected_head_sha": "7798dc28941a88d9d078868c930372ae2771fada",
+      "repair_reason": "structured ClawSweeper verdict: needs-human (sha=3216cb01c65af13f5dc6282d73999cbac6218142)",
+      "expected_head_sha": "3216cb01c65af13f5dc6282d73999cbac6218142",
       "finding_id": null,
       "status": "skipped",
       "actions": [],
@@ -2282,7 +2153,7 @@
         "kind": "pull_request",
         "title": "improve(ui): chat opens faster on slow links by dropping empty boot requests",
         "branch": "perf/ui-boot-facade-requests",
-        "head_sha": "7798dc28941a88d9d078868c930372ae2771fada",
+        "head_sha": "3216cb01c65af13f5dc6282d73999cbac6218142",
         "author": "steipete",
         "labels": [
           "docs",
@@ -2306,37 +2177,19 @@
           "total": 157,
           "counts": {
             "SKIPPED": 30,
-            "SUCCESS": 99,
-            "CANCELLED": 23,
-            "FAILURE": 4,
+            "SUCCESS": 117,
+            "CANCELLED": 6,
+            "FAILURE": 3,
             "NEUTRAL": 1
           },
           "blockers": [
-            "build-artifacts:CANCELLED",
-            "checks-ui (1/3):CANCELLED",
-            "checks-ui (2/3):CANCELLED",
-            "checks-ui (3/3):CANCELLED",
             "checks-ui-e2e (1/9):CANCELLED",
-            "checks-ui-e2e (2/9):CANCELLED",
-            "checks-ui-e2e (3/9):CANCELLED",
+            "checks-ui-e2e (3/9):FAILURE",
             "checks-ui-e2e (4/9):CANCELLED",
-            "checks-ui-e2e (5/9):CANCELLED",
-            "checks-ui-e2e (6/9):CANCELLED",
             "checks-ui-e2e (7/9):CANCELLED",
             "checks-ui-e2e (8/9):CANCELLED",
             "checks-ui-e2e-real-gateway (1/2):CANCELLED",
             "checks-ui-e2e-real-gateway (2/2):CANCELLED",
-            "checks-node-changed-compact-small-42:CANCELLED",
-            "check-additional-extension-package-boundary:CANCELLED",
-            "check-dependencies:CANCELLED",
-            "check-lint-extensions-1:CANCELLED",
-            "check-lint-extensions-2:CANCELLED",
-            "check-lint-extensions-3:CANCELLED",
-            "check-test-types-core-1:CANCELLED",
-            "check-test-types-core-2:CANCELLED",
-            "check-test-types-core-3:CANCELLED",
-            "check-test-types-core-4:FAILURE",
-            "check-test-types-core-5:FAILURE",
             "openclaw/ci-gate:FAILURE",
             "openclaw/ci-gate:FAILURE"
           ]
@@ -2423,17 +2276,17 @@
       "reason": "comment version already processed in ledger"
     },
     {
-      "idempotency_key": "clawsweeper-repair:openclaw/openclaw:161649:5904903189:2026-09-30T07:11:40Z:clawsweeper_auto_repair",
+      "idempotency_key": "clawsweeper-repair:openclaw/openclaw:161649:5904903189:2026-09-30T07:39:56Z:clawsweeper_auto_repair",
       "comment_id": "5904903189",
       "comment_node_id": "IC_kwDOQb6kR88AAAABX_WsFQ",
-      "comment_version_key": "5904903189:2026-09-30T07:11:40Z",
+      "comment_version_key": "5904903189:2026-09-30T07:39:56Z",
       "comment_url": "https://github.com/openclaw/openclaw/pull/161649#issuecomment-5904903189",
       "repo": "openclaw/openclaw",
       "issue_number": 161649,
       "author": "clawsweeper[bot]",
       "author_association": "CONTRIBUTOR",
       "comment_created_at": "2026-09-30T05:43:24Z",
-      "comment_updated_at": "2026-09-30T07:11:40Z",
+      "comment_updated_at": "2026-09-30T07:39:56Z",
       "trigger": "trusted_bot",
       "command": "clawsweeper auto repair",
       "intent": "clawsweeper_auto_repair",
@@ -2441,8 +2294,8 @@
       "trusted_bot": true,
       "trusted_bot_author": "clawsweeper[bot]",
       "automation_source": "clawsweeper",
-      "repair_reason": "structured ClawSweeper verdict: needs-human (sha=e221751902af362d9af31eedf37b8ae0786af237)",
-      "expected_head_sha": "e221751902af362d9af31eedf37b8ae0786af237",
+      "repair_reason": "structured ClawSweeper verdict: needs-human (sha=95c3ef015a04d500ed5b6e6df531c108709240ac)",
+      "expected_head_sha": "95c3ef015a04d500ed5b6e6df531c108709240ac",
       "finding_id": null,
       "status": "skipped",
       "actions": [],
@@ -2450,7 +2303,7 @@
         "kind": "pull_request",
         "title": "improve(ui): skip login screen and duplicate avatar downloads during chat startup",
         "branch": "perf/ui-boot-slot-waste",
-        "head_sha": "e221751902af362d9af31eedf37b8ae0786af237",
+        "head_sha": "95c3ef015a04d500ed5b6e6df531c108709240ac",
         "author": "steipete",
         "labels": [
           "app: web-ui",
@@ -2466,40 +2319,15 @@
         "automerge_cluster_id": "automerge-openclaw-openclaw-161649",
         "automerge_job_path": "jobs/openclaw/inbox/automerge-openclaw-openclaw-161649.md",
         "mode": "autonomous",
-        "merge_state_status": "UNKNOWN",
+        "merge_state_status": "CLEAN",
         "review_decision": "",
         "checks": {
           "total": 83,
           "counts": {
-            "SUCCESS": 32,
-            "SKIPPED": 29,
-            "CANCELLED": 19,
-            "FAILURE": 3
+            "SUCCESS": 54,
+            "SKIPPED": 29
           },
-          "blockers": [
-            "checks-ui (1/3):CANCELLED",
-            "checks-ui (2/3):CANCELLED",
-            "checks-ui (3/3):CANCELLED",
-            "checks-ui-e2e (1/9):CANCELLED",
-            "checks-ui-e2e (2/9):CANCELLED",
-            "checks-ui-e2e (3/9):CANCELLED",
-            "checks-ui-e2e (4/9):CANCELLED",
-            "checks-ui-e2e (5/9):CANCELLED",
-            "checks-ui-e2e (6/9):CANCELLED",
-            "checks-ui-e2e (7/9):CANCELLED",
-            "checks-ui-e2e (8/9):CANCELLED",
-            "checks-ui-e2e-real-gateway (1/2):CANCELLED",
-            "checks-ui-e2e-real-gateway (2/2):CANCELLED",
-            "check-guards:CANCELLED",
-            "check-dependencies:CANCELLED",
-            "check-lint-extensions-1:CANCELLED",
-            "check-lint-extensions-2:CANCELLED",
-            "check-lint-extensions-3:CANCELLED",
-            "check-test-types-core-1:FAILURE",
-            "check-test-types-core-2:CANCELLED",
-            "openclaw/ci-gate:FAILURE",
-            "openclaw/ci-gate:FAILURE"
-          ]
+          "blockers": []
         }
       },
       "reason": "repair commands require a Clownfish PR or a PR opted into Clownfish automerge"
@@ -2606,57 +2434,7 @@
       "finding_id": null,
       "status": "skipped",
       "actions": [],
-      "target": {
-        "kind": "pull_request",
-        "title": "fix(ui): automation From links open empty chats after runs finish",
-        "branch": "steipete/link-rendering-issue-6a03c7",
-        "head_sha": "891a54ebe7e59a48c20447523464c2138294b0bc",
-        "author": "steipete",
-        "labels": [
-          "docs",
-          "app: web-ui",
-          "size: S",
-          "P2",
-          "rating: 🦐 gold shrimp",
-          "status: 👀 ready for maintainer look"
-        ],
-        "is_clownfish_pr": false,
-        "cluster_id": null,
-        "job_path": null,
-        "automerge_cluster_id": "automerge-openclaw-openclaw-161643",
-        "automerge_job_path": "jobs/openclaw/inbox/automerge-openclaw-openclaw-161643.md",
-        "mode": "autonomous",
-        "merge_state_status": "BLOCKED",
-        "review_decision": "",
-        "checks": {
-          "total": 90,
-          "counts": {
-            "SKIPPED": 33,
-            "SUCCESS": 41,
-            "IN_PROGRESS": 15,
-            "PENDING": 1
-          },
-          "blockers": [
-            "checks-ui-e2e (1/9):IN_PROGRESS",
-            "checks-ui-e2e (2/9):IN_PROGRESS",
-            "checks-ui-e2e (3/9):IN_PROGRESS",
-            "checks-ui-e2e (4/9):IN_PROGRESS",
-            "checks-ui-e2e (5/9):IN_PROGRESS",
-            "checks-ui-e2e (6/9):IN_PROGRESS",
-            "checks-ui-e2e (7/9):IN_PROGRESS",
-            "checks-ui-e2e (8/9):IN_PROGRESS",
-            "check-additional-runtime-topology-architecture:IN_PROGRESS",
-            "pr-fail-fast:IN_PROGRESS",
-            "check-dependencies:IN_PROGRESS",
-            "check-lint-extensions-1:IN_PROGRESS",
-            "check-lint-extensions-2:IN_PROGRESS",
-            "check-lint-extensions-3:IN_PROGRESS",
-            "check-test-types-core-2:IN_PROGRESS",
-            "openclaw/ci-gate:PENDING"
-          ]
-        }
-      },
-      "reason": "repair commands require a Clownfish PR or a PR opted into Clownfish automerge"
+      "reason": "comment version already processed in ledger"
     },
     {
       "idempotency_key": "clawsweeper-repair:openclaw/openclaw:161642:5904758978:2026-09-30T07:24:34Z:clawsweeper_auto_repair",
@@ -2682,71 +2460,20 @@
       "finding_id": null,
       "status": "skipped",
       "actions": [],
-      "target": {
-        "kind": "pull_request",
-        "title": "refactor(worker-workspace): remove dead code and comment slop in worker workspaces",
-        "branch": "codex/deslop-cw-workspace-0929",
-        "head_sha": "6fe13835d014e4c2fa46b9619691778c2c213030",
-        "author": "steipete",
-        "labels": [
-          "gateway",
-          "size: S",
-          "P3",
-          "rating: 🐚 platinum hermit",
-          "status: 👀 ready for maintainer look"
-        ],
-        "is_clownfish_pr": false,
-        "cluster_id": null,
-        "job_path": null,
-        "automerge_cluster_id": "automerge-openclaw-openclaw-161642",
-        "automerge_job_path": "jobs/openclaw/inbox/automerge-openclaw-openclaw-161642.md",
-        "mode": "autonomous",
-        "merge_state_status": "BLOCKED",
-        "review_decision": "",
-        "checks": {
-          "total": 237,
-          "counts": {
-            "SUCCESS": 175,
-            "SKIPPED": 44,
-            "IN_PROGRESS": 16,
-            "PENDING": 1,
-            "NEUTRAL": 1
-          },
-          "blockers": [
-            "build-artifacts:IN_PROGRESS",
-            "checks-ui-e2e (1/9):IN_PROGRESS",
-            "checks-ui-e2e (2/9):IN_PROGRESS",
-            "checks-ui-e2e (5/9):IN_PROGRESS",
-            "checks-ui-e2e (6/9):IN_PROGRESS",
-            "checks-ui-e2e-real-gateway (1/2):IN_PROGRESS",
-            "checks-ui-e2e-real-gateway (2/2):IN_PROGRESS",
-            "checks-node-changed-compact-small-16:IN_PROGRESS",
-            "checks-node-changed-extensions-bundle-14-1:IN_PROGRESS",
-            "checks-node-changed-4:IN_PROGRESS",
-            "checks-node-changed-compact-large-23-1:IN_PROGRESS",
-            "checks-node-changed-compact-small-51:IN_PROGRESS",
-            "checks-windows-node-test-4:IN_PROGRESS",
-            "pr-fail-fast:IN_PROGRESS",
-            "check-lint-extensions-2:IN_PROGRESS",
-            "check-test-types-core-2:IN_PROGRESS",
-            "openclaw/ci-gate:PENDING"
-          ]
-        }
-      },
-      "reason": "repair commands require a Clownfish PR or a PR opted into Clownfish automerge"
+      "reason": "comment version already processed in ledger"
     },
     {
-      "idempotency_key": "clawsweeper-repair:openclaw/openclaw:161641:5904732535:2026-09-30T05:29:24Z:clawsweeper_auto_repair",
+      "idempotency_key": "clawsweeper-repair:openclaw/openclaw:161641:5904732535:2026-09-30T07:44:07Z:clawsweeper_auto_repair",
       "comment_id": "5904732535",
       "comment_node_id": "IC_kwDOQb6kR88AAAABX_MRdw",
-      "comment_version_key": "5904732535:2026-09-30T05:29:24Z",
+      "comment_version_key": "5904732535:2026-09-30T07:44:07Z",
       "comment_url": "https://github.com/openclaw/openclaw/pull/161641#issuecomment-5904732535",
       "repo": "openclaw/openclaw",
       "issue_number": 161641,
       "author": "clawsweeper[bot]",
       "author_association": "CONTRIBUTOR",
       "comment_created_at": "2026-09-30T05:29:24Z",
-      "comment_updated_at": "2026-09-30T05:29:24Z",
+      "comment_updated_at": "2026-09-30T07:44:07Z",
       "trigger": "trusted_bot",
       "command": "clawsweeper auto repair",
       "intent": "clawsweeper_auto_repair",
@@ -2759,7 +2486,48 @@
       "finding_id": null,
       "status": "skipped",
       "actions": [],
-      "reason": "comment version already processed in ledger"
+      "target": {
+        "kind": "pull_request",
+        "title": "fix(tools): stop warning that core group allowlist entries require a plugin",
+        "branch": "fix/core-tool-group-allowlist-warning",
+        "head_sha": "69ab1c4153ba9f02ce1da9f82f9b5ec5baa9006c",
+        "author": "irish-joseph",
+        "labels": [
+          "agents",
+          "size: S",
+          "proof: sufficient",
+          "P2",
+          "rating: 🐚 platinum hermit",
+          "status: 👀 ready for maintainer look",
+          "security-sensitive-changed",
+          "security-review-required"
+        ],
+        "is_clownfish_pr": false,
+        "cluster_id": null,
+        "job_path": null,
+        "automerge_cluster_id": "automerge-openclaw-openclaw-161641",
+        "automerge_job_path": "jobs/openclaw/inbox/automerge-openclaw-openclaw-161641.md",
+        "mode": "autonomous",
+        "merge_state_status": "BLOCKED",
+        "review_decision": "",
+        "checks": {
+          "total": 213,
+          "counts": {
+            "SKIPPED": 69,
+            "SUCCESS": 139,
+            "CANCELLED": 1,
+            "FAILURE": 3,
+            "NEUTRAL": 1
+          },
+          "blockers": [
+            "checks-node-changed-compact-large-33:CANCELLED",
+            "openclaw/ci-gate:FAILURE",
+            "openclaw/ci-gate:FAILURE",
+            "openclaw/security-sensitive-review:FAILURE"
+          ]
+        }
+      },
+      "reason": "repair commands require a Clownfish PR or a PR opted into Clownfish automerge"
     },
     {
       "idempotency_key": "clawsweeper-repair:openclaw/openclaw:161638:5904709793:2026-09-30T05:27:55Z:clawsweeper_auto_repair",
@@ -3384,271 +3152,6 @@
       "status": "skipped",
       "actions": [],
       "reason": "comment version already processed in ledger"
-    },
-    {
-      "idempotency_key": "clawsweeper-repair:openclaw/openclaw:161615:5904440293:2026-09-30T05:03:32Z:clawsweeper_auto_repair",
-      "comment_id": "5904440293",
-      "comment_node_id": "IC_kwDOQb6kR88AAAABX-6b5Q",
-      "comment_version_key": "5904440293:2026-09-30T05:03:32Z",
-      "comment_url": "https://github.com/openclaw/openclaw/pull/161615#issuecomment-5904440293",
-      "repo": "openclaw/openclaw",
-      "issue_number": 161615,
-      "author": "clawsweeper[bot]",
-      "author_association": "CONTRIBUTOR",
-      "comment_created_at": "2026-09-30T05:03:32Z",
-      "comment_updated_at": "2026-09-30T05:03:32Z",
-      "trigger": "trusted_bot",
-      "command": "clawsweeper auto repair",
-      "intent": "clawsweeper_auto_repair",
-      "autoclose_message": null,
-      "trusted_bot": true,
-      "trusted_bot_author": "clawsweeper[bot]",
-      "automation_source": "clawsweeper",
-      "repair_reason": "structured ClawSweeper verdict: needs-human (sha=9110df27efff2b09e943da5673c3c56fb554b9b1)",
-      "expected_head_sha": "9110df27efff2b09e943da5673c3c56fb554b9b1",
-      "finding_id": null,
-      "status": "skipped",
-      "actions": [],
-      "reason": "comment version already processed in ledger"
-    },
-    {
-      "idempotency_key": "clawsweeper-repair:openclaw/openclaw:161610:5904420060:2026-09-30T05:01:47Z:clawsweeper_auto_repair",
-      "comment_id": "5904420060",
-      "comment_node_id": "IC_kwDOQb6kR88AAAABX-5M3A",
-      "comment_version_key": "5904420060:2026-09-30T05:01:47Z",
-      "comment_url": "https://github.com/openclaw/openclaw/issues/161610#issuecomment-5904420060",
-      "repo": "openclaw/openclaw",
-      "issue_number": 161610,
-      "author": "clawsweeper[bot]",
-      "author_association": "CONTRIBUTOR",
-      "comment_created_at": "2026-09-30T05:01:47Z",
-      "comment_updated_at": "2026-09-30T05:01:47Z",
-      "trigger": "trusted_bot",
-      "command": "clawsweeper auto repair",
-      "intent": "clawsweeper_auto_repair",
-      "autoclose_message": null,
-      "trusted_bot": true,
-      "trusted_bot_author": "clawsweeper[bot]",
-      "automation_source": "clawsweeper",
-      "repair_reason": "ClawSweeper review comment asks to keep repairing this PR",
-      "expected_head_sha": null,
-      "finding_id": null,
-      "status": "skipped",
-      "actions": [],
-      "reason": "comment version already processed in ledger"
-    },
-    {
-      "idempotency_key": "clawsweeper-repair:openclaw/openclaw:161614:5904416227:2026-09-30T05:01:29Z:clawsweeper_auto_repair",
-      "comment_id": "5904416227",
-      "comment_node_id": "IC_kwDOQb6kR88AAAABX-494w",
-      "comment_version_key": "5904416227:2026-09-30T05:01:29Z",
-      "comment_url": "https://github.com/openclaw/openclaw/pull/161614#issuecomment-5904416227",
-      "repo": "openclaw/openclaw",
-      "issue_number": 161614,
-      "author": "clawsweeper[bot]",
-      "author_association": "CONTRIBUTOR",
-      "comment_created_at": "2026-09-30T05:01:29Z",
-      "comment_updated_at": "2026-09-30T05:01:29Z",
-      "trigger": "trusted_bot",
-      "command": "clawsweeper auto repair",
-      "intent": "clawsweeper_auto_repair",
-      "autoclose_message": null,
-      "trusted_bot": true,
-      "trusted_bot_author": "clawsweeper[bot]",
-      "automation_source": "clawsweeper",
-      "repair_reason": "structured ClawSweeper verdict: needs-human (sha=bf62634a0efa79e3e53804f3266ef7bb3ca490ef)",
-      "expected_head_sha": "bf62634a0efa79e3e53804f3266ef7bb3ca490ef",
-      "finding_id": null,
-      "status": "skipped",
-      "actions": [],
-      "reason": "comment version already processed in ledger"
-    },
-    {
-      "idempotency_key": "clawsweeper-repair:openclaw/openclaw:161616:5904408546:2026-09-30T05:00:55Z:clawsweeper_auto_repair",
-      "comment_id": "5904408546",
-      "comment_node_id": "IC_kwDOQb6kR88AAAABX-4f4g",
-      "comment_version_key": "5904408546:2026-09-30T05:00:55Z",
-      "comment_url": "https://github.com/openclaw/openclaw/pull/161616#issuecomment-5904408546",
-      "repo": "openclaw/openclaw",
-      "issue_number": 161616,
-      "author": "clawsweeper[bot]",
-      "author_association": "CONTRIBUTOR",
-      "comment_created_at": "2026-09-30T05:00:55Z",
-      "comment_updated_at": "2026-09-30T05:00:55Z",
-      "trigger": "trusted_bot",
-      "command": "clawsweeper auto repair",
-      "intent": "clawsweeper_auto_repair",
-      "autoclose_message": null,
-      "trusted_bot": true,
-      "trusted_bot_author": "clawsweeper[bot]",
-      "automation_source": "clawsweeper",
-      "repair_reason": "structured ClawSweeper verdict: needs-human (sha=0ace0f28fbd93fe1950cb712e8603476957780b6)",
-      "expected_head_sha": "0ace0f28fbd93fe1950cb712e8603476957780b6",
-      "finding_id": null,
-      "status": "skipped",
-      "actions": [],
-      "reason": "comment version already processed in ledger"
-    },
-    {
-      "idempotency_key": "clawsweeper-repair:openclaw/openclaw:161613:5904305986:2026-09-30T04:53:04Z:clawsweeper_auto_repair",
-      "comment_id": "5904305986",
-      "comment_node_id": "IC_kwDOQb6kR88AAAABX-yPQg",
-      "comment_version_key": "5904305986:2026-09-30T04:53:04Z",
-      "comment_url": "https://github.com/openclaw/openclaw/issues/161613#issuecomment-5904305986",
-      "repo": "openclaw/openclaw",
-      "issue_number": 161613,
-      "author": "clawsweeper[bot]",
-      "author_association": "CONTRIBUTOR",
-      "comment_created_at": "2026-09-30T04:53:04Z",
-      "comment_updated_at": "2026-09-30T04:53:04Z",
-      "trigger": "trusted_bot",
-      "command": "clawsweeper auto repair",
-      "intent": "clawsweeper_auto_repair",
-      "autoclose_message": null,
-      "trusted_bot": true,
-      "trusted_bot_author": "clawsweeper[bot]",
-      "automation_source": "clawsweeper",
-      "repair_reason": "ClawSweeper review comment asks to keep repairing this PR",
-      "expected_head_sha": null,
-      "finding_id": null,
-      "status": "skipped",
-      "actions": [],
-      "reason": "comment version already processed in ledger"
-    },
-    {
-      "idempotency_key": "clawsweeper-repair:openclaw/openclaw:161612:5904249908:2026-09-30T04:48:00Z:clawsweeper_auto_repair",
-      "comment_id": "5904249908",
-      "comment_node_id": "IC_kwDOQb6kR88AAAABX-u0NA",
-      "comment_version_key": "5904249908:2026-09-30T04:48:00Z",
-      "comment_url": "https://github.com/openclaw/openclaw/pull/161612#issuecomment-5904249908",
-      "repo": "openclaw/openclaw",
-      "issue_number": 161612,
-      "author": "clawsweeper[bot]",
-      "author_association": "CONTRIBUTOR",
-      "comment_created_at": "2026-09-30T04:48:00Z",
-      "comment_updated_at": "2026-09-30T04:48:00Z",
-      "trigger": "trusted_bot",
-      "command": "clawsweeper auto repair",
-      "intent": "clawsweeper_auto_repair",
-      "autoclose_message": null,
-      "trusted_bot": true,
-      "trusted_bot_author": "clawsweeper[bot]",
-      "automation_source": "clawsweeper",
-      "repair_reason": "structured ClawSweeper verdict: needs-human (sha=f807a5c7eb90184f3ae266d1a6b7333cafb6238a)",
-      "expected_head_sha": "f807a5c7eb90184f3ae266d1a6b7333cafb6238a",
-      "finding_id": null,
-      "status": "skipped",
-      "actions": [],
-      "reason": "comment version already processed in ledger"
-    },
-    {
-      "idempotency_key": "clawsweeper-repair:openclaw/openclaw:161611:5904244207:2026-09-30T04:53:04Z:clawsweeper_auto_repair",
-      "comment_id": "5904244207",
-      "comment_node_id": "IC_kwDOQb6kR88AAAABX-ud7w",
-      "comment_version_key": "5904244207:2026-09-30T04:53:04Z",
-      "comment_url": "https://github.com/openclaw/openclaw/pull/161611#issuecomment-5904244207",
-      "repo": "openclaw/openclaw",
-      "issue_number": 161611,
-      "author": "clawsweeper[bot]",
-      "author_association": "CONTRIBUTOR",
-      "comment_created_at": "2026-09-30T04:47:29Z",
-      "comment_updated_at": "2026-09-30T04:53:04Z",
-      "trigger": "trusted_bot",
-      "command": "clawsweeper auto repair",
-      "intent": "clawsweeper_auto_repair",
-      "autoclose_message": null,
-      "trusted_bot": true,
-      "trusted_bot_author": "clawsweeper[bot]",
-      "automation_source": "clawsweeper",
-      "repair_reason": "structured ClawSweeper verdict: needs-human (sha=f86133a442cbceff5174b449034802fbc5a76ef3)",
-      "expected_head_sha": "f86133a442cbceff5174b449034802fbc5a76ef3",
-      "finding_id": null,
-      "status": "skipped",
-      "actions": [],
-      "reason": "comment version already processed in ledger"
-    },
-    {
-      "idempotency_key": "clawsweeper-repair:openclaw/openclaw:161609:5904224182:2026-09-30T07:12:23Z:clawsweeper_auto_repair",
-      "comment_id": "5904224182",
-      "comment_node_id": "IC_kwDOQb6kR88AAAABX-tPtg",
-      "comment_version_key": "5904224182:2026-09-30T07:12:23Z",
-      "comment_url": "https://github.com/openclaw/openclaw/pull/161609#issuecomment-5904224182",
-      "repo": "openclaw/openclaw",
-      "issue_number": 161609,
-      "author": "clawsweeper[bot]",
-      "author_association": "CONTRIBUTOR",
-      "comment_created_at": "2026-09-30T04:45:42Z",
-      "comment_updated_at": "2026-09-30T07:12:23Z",
-      "trigger": "trusted_bot",
-      "command": "clawsweeper auto repair",
-      "intent": "clawsweeper_auto_repair",
-      "autoclose_message": null,
-      "trusted_bot": true,
-      "trusted_bot_author": "clawsweeper[bot]",
-      "automation_source": "clawsweeper",
-      "repair_reason": "structured ClawSweeper verdict: needs-human (sha=0fa140a659996bf542f983ea08f381c5f1428855)",
-      "expected_head_sha": "0fa140a659996bf542f983ea08f381c5f1428855",
-      "finding_id": null,
-      "status": "skipped",
-      "actions": [],
-      "target": {
-        "kind": "pull_request",
-        "title": "feat(agentsapi): support deployment-owned self-hosted executors",
-        "branch": "sjf/agentsapi-executor-controller",
-        "head_sha": "0fa140a659996bf542f983ea08f381c5f1428855",
-        "author": "sjf-oa",
-        "labels": [
-          "size: XL",
-          "P2",
-          "rating: 🧂 unranked krab",
-          "merge-risk: 🚨 compatibility",
-          "merge-risk: 🚨 security-boundary",
-          "merge-risk: 🚨 availability",
-          "status: 📣 needs proof",
-          "extensions: agentsapi"
-        ],
-        "is_clownfish_pr": false,
-        "cluster_id": null,
-        "job_path": null,
-        "automerge_cluster_id": "automerge-openclaw-openclaw-161609",
-        "automerge_job_path": "jobs/openclaw/inbox/automerge-openclaw-openclaw-161609.md",
-        "mode": "autonomous",
-        "merge_state_status": "BLOCKED",
-        "review_decision": "",
-        "checks": {
-          "total": 105,
-          "counts": {
-            "SKIPPED": 50,
-            "SUCCESS": 34,
-            "CANCELLED": 18,
-            "FAILURE": 3
-          },
-          "blockers": [
-            "checks-node-changed:CANCELLED",
-            "checks-node-changed-extensions-bundle-1:CANCELLED",
-            "check-additional-boundaries:CANCELLED",
-            "check-source-contracts:CANCELLED",
-            "check-additional-extension-package-boundary:CANCELLED",
-            "check-additional-runtime-topology-architecture:FAILURE",
-            "check-docs:CANCELLED",
-            "check-guards:CANCELLED",
-            "check-prod-types:CANCELLED",
-            "check-dependencies:CANCELLED",
-            "check-test-types:CANCELLED",
-            "check-lint-extensions-1:CANCELLED",
-            "check-lint-extensions-2:CANCELLED",
-            "check-lint-extensions-3:CANCELLED",
-            "check-test-types-core-1:CANCELLED",
-            "check-test-types-core-2:CANCELLED",
-            "check-test-types-core-3:CANCELLED",
-            "check-test-types-core-4:CANCELLED",
-            "check-test-types-core-5:CANCELLED",
-            "openclaw/ci-gate:FAILURE",
-            "openclaw/ci-gate:FAILURE"
-          ]
-        }
-      },
-      "reason": "repair commands require a Clownfish PR or a PR opted into Clownfish automerge"
     }
   ]
 }
