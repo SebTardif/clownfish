@@ -3,6 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import test from "node:test";
 
+import { hasSecurityQuarantine } from "../scripts/lib.mjs";
 import {
   shouldRequirePrChecks,
   shouldWaitForMergeReadiness,
@@ -96,4 +97,56 @@ test("post-flight compares reviewed base proof with the live base ref head", () 
   assert.match(source, /const liveBaseSha = baseRef === "main" \? fetchBranchHeadSha\(result\.repo, baseRef\) : "";/);
   assert.match(source, /baseSha: liveBaseSha,/);
   assert.doesNotMatch(source, /baseSha: pull\.base\?\.sha/);
+});
+
+test("post-flight quarantines a security signal on the live issue and the fix pull", () => {
+  const source = fs.readFileSync(path.join(repoRoot, "scripts", "post-flight.mjs"), "utf8");
+
+  assert.match(source, /hasSecurityQuarantine\(/);
+  assert.match(source, /hasLiveSecuritySignal\(live\)/);
+  assert.match(source, /hasLiveSecuritySignal\(pull\)/);
+  assert.equal(hasSecurityQuarantine({
+    number: 7,
+    title: "ordinary bug",
+    body: "ordinary body",
+    signalRefs: ["#7"],
+  }), true);
+  assert.equal(hasSecurityQuarantine({
+    number: 7,
+    title: "authentication bypass in gateway auth",
+    body: "ordinary body",
+  }), true);
+  assert.equal(hasSecurityQuarantine({
+    number: 7,
+    title: "ordinary bug",
+    body: "Reported as GHSA-1234-5678-abcd",
+  }), true);
+  assert.equal(hasSecurityQuarantine({
+    number: 7,
+    title: "authentication bypass in gateway auth",
+    body: "Reported as GHSA-1234-5678-abcd",
+    signalRefs: ["#7"],
+    overrideRefs: ["#7"],
+  }), false);
+  assert.equal(hasSecurityQuarantine({
+    number: 7,
+    title: "ordinary bug",
+    body: "ordinary body",
+    labels: ["security"],
+    signalRefs: ["#7"],
+    overrideRefs: ["#7"],
+  }), true);
+  assert.equal(hasSecurityQuarantine({
+    number: 7,
+    title: "ordinary bug",
+    body: "ordinary body",
+    comments: ["<!-- clawsweeper-security:security-sensitive item=7 -->"],
+    overrideRefs: ["#7"],
+  }), true);
+  assert.equal(hasSecurityQuarantine({
+    number: 7,
+    title: "ordinary bug",
+    body: "ordinary body",
+    comments: ["This comment mentions CVE-2024-1 and nothing else."],
+  }), false);
 });

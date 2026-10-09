@@ -856,6 +856,23 @@ export function securityRefTokens(refs) {
   return tokens;
 }
 
+export function hasSecurityQuarantine({
+  number,
+  title,
+  body,
+  labels = [],
+  comments = [],
+  signalRefs,
+  overrideRefs,
+} = {}) {
+  const token = `#${number}`;
+  const overridden = securityRefTokens(overrideRefs).has(token);
+  if (!overridden && securityRefTokens(signalRefs).has(token)) return true;
+  if (!overridden && hasSecuritySignalText(title, body)) return true;
+  if (hasDeterministicSecuritySignal({ labels })) return true;
+  return hasDeterministicSecuritySignal({ comments });
+}
+
 export function hasDeterministicSecuritySignal({ labels = [], comments = [] } = {}) {
   const labelTexts = flattenSecurityText(labels).map((label) => label.trim());
   if (labelTexts.some((label) => SECURITY_LABEL_PATTERN.test(label))) return true;
