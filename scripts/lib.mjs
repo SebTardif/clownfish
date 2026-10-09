@@ -844,6 +844,18 @@ export function hasSecuritySignalText(...values) {
   return SECURITY_SIGNAL_PATTERN.test(text);
 }
 
+export function securityRefTokens(refs) {
+  const tokens = new Set();
+  for (const ref of refs ?? []) {
+    const text = String(ref ?? "").trim();
+    const shorthand = text.match(/^#?(\d+)$/);
+    const url = text.match(/github\.com\/[^/\s]+\/[^/\s]+\/(?:issues|pull)\/(\d+)/i);
+    const number = Number(shorthand?.[1] ?? url?.[1]);
+    if (Number.isSafeInteger(number) && number > 0) tokens.add(`#${number}`);
+  }
+  return tokens;
+}
+
 export function hasDeterministicSecuritySignal({ labels = [], comments = [] } = {}) {
   const labelTexts = flattenSecurityText(labels).map((label) => label.trim());
   if (labelTexts.some((label) => SECURITY_LABEL_PATTERN.test(label))) return true;

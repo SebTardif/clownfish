@@ -6,9 +6,11 @@ import { spawnSync } from "node:child_process";
 import {
   assertAllowedOwner,
   hasDeterministicSecuritySignal,
+  hasSecuritySignalText,
   parseArgs,
   parseJob,
   repoRoot,
+  securityRefTokens,
   validateJob,
 } from "./lib.mjs";
 import {
@@ -2558,12 +2560,21 @@ function validateFixSecurityScope({ job, resultPath, fixArtifact, plannedFixActi
     };
   }
 
+  const overrides = securityRefTokens(job.frontmatter.security_override_refs);
   const clusterPlan = readSiblingJson(resultPath, "cluster-plan.json");
   const securityRefs = new Set(
     (clusterPlan?.security_boundary?.security_sensitive_items ?? [])
       .map(normalizeLocalRef)
-      .filter(Boolean),
+      .filter((ref) => ref && !overrides.has(ref)),
   );
+  for (const ref of securityRefTokens(job.frontmatter.security_signal_refs)) {
+    if (!overrides.has(ref)) securityRefs.add(ref);
+  }
+  for (const item of clusterPlan?.items ?? []) {
+    const ref = normalizeLocalRef(item?.ref ?? item?.number);
+    if (!ref || overrides.has(ref)) continue;
+    if (hasSecuritySignalText(item?.title, item?.body_excerpt ?? item?.body)) securityRefs.add(ref);
+  }
 
   for (const action of plannedFixActions) {
     const target = normalizeLocalRef(action.target);

@@ -6,10 +6,12 @@ import { promisify } from "node:util";
 import {
   assertAllowedOwner,
   hasDeterministicSecuritySignal,
+  hasSecuritySignalText,
   makeRunDir,
   parseArgs,
   parseJob,
   repoRoot,
+  securityRefTokens,
   validateJob,
 } from "./lib.mjs";
 
@@ -574,6 +576,8 @@ function classificationHint(item, job) {
 
 function itemSecuritySensitive(item, job) {
   if (securityOverrideRefs(job).has(`#${item.number}`)) return false;
+  if (securityRefTokens(job.frontmatter.security_signal_refs).has(`#${item.number}`)) return true;
+  if (hasSecuritySignalText(item.title, item.body)) return true;
   return hasDeterministicSecuritySignal({
     labels: item.labels,
     comments: [
@@ -585,7 +589,7 @@ function itemSecuritySensitive(item, job) {
 }
 
 function securityOverrideRefs(job) {
-  return new Set((job.frontmatter.security_override_refs ?? []).map((ref) => `#${String(ref).replace(/^#/, "")}`));
+  return securityRefTokens(job.frontmatter.security_override_refs);
 }
 
 function extractLinkedRefs(defaultRepo, item) {
